@@ -2,12 +2,20 @@ const express = require('express')
 const mongoose = require('mongoose')
 const cors = require('cors')
 const UserModel = require('./models/user')
+const path = require("path");
 
 const app = express()
 app.use(express.json())
 app.use(cors())
 
 mongoose.connect("mongodb://localhost:27017/SuperBrokers")
+
+const srcPath = path.join(__dirname, '../super-brokers/dist');
+app.use(express.static(srcPath));
+
+app.get("*", (req, res) => {
+    res.sendFile(path.join(srcPath, "index.html"));
+});
 
 app.post("/login", (req, res) => {
     const {email, password} = req.body;
