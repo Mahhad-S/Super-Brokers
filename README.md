@@ -12,7 +12,9 @@ In the terminal, type: npm i -g nodemon
 
 **To start the local server:**
 - Port 3001: cd to "server" and type "npm start"
+    - utilizing app.jsx
 - Port 5173 (Vite server): cd to "super-brokers" and type "npm run dev"
+    - utilizing main.jsx
 
 If nodemon is installed and your server is not starting, it may be because your execution policy is set to Restricted
 To fix this, open up Windows Powershell as administrator

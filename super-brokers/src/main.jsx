@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import App from './App.jsx';
 import Signup from './Signup.jsx';
 import Login from './Login.jsx';
+import Home from './Home.jsx';
 
 const rootElement = document.getElementById('root');
 const root = createRoot(rootElement);
@@ -13,9 +14,10 @@ root.render(
   <StrictMode>
     <Router>
       <Routes>
-        <Route path="/" element={<App />} />
+        <Route path="/" element={<Home />} />
         <Route path="/register" element={<Signup />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/home" element={<Home />} />
       </Routes>
     </Router>
   </StrictMode>
