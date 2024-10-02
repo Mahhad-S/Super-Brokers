@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
-import './assets/Signup.css';
 
 function Signup() {
     const [name, setName] = useState();
@@ -21,19 +20,19 @@ function Signup() {
     };
     
     return (
-        <div className="signup-container">
-            <div className="signup-box">
+        <div className="d-flex justify-content-center align-items-center bg-secondary vh-100">
+            <div className="bg-white p-3 rounded -25">
                 <h2>Register</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">
-                        <label htmlFor="name">
+                        <label htmlFor="email">
                             <strong>Name</strong>
                         </label>
                         <input 
                             type="text"
                             placeholder="Enter Name"
                             autoComplete="off"
-                            name="name"
+                            name="email"
                             className="form-control rounded-0"
                             onChange={(e) => setName(e.target.value)}
                         />
@@ -52,7 +51,7 @@ function Signup() {
                         />
                     </div>
                     <div className="mb-3">
-                        <label htmlFor="password">
+                        <label htmlFor="email">
                             <strong>Password</strong>
                         </label>
                         <input 
@@ -67,8 +66,8 @@ function Signup() {
                         Register
                     </button>
                 </form>
-                <p>Already Have an Account?</p>
-                <Link to="/login" className="login-link">
+                <p>Already Have an Account</p>
+                <Link to="/login" className="btn btn-default border w-100 bg-light rounded-0 text-decoration-none">
                     Login
                 </Link>
             </div>
