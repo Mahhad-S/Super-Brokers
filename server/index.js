@@ -6,7 +6,9 @@ const path = require("path");
 
 const app = express()
 app.use(express.json())
-app.use(cors())
+app.use(cors({
+    origin: "http://localhost:3001"
+}))
 
 mongoose.connect("mongodb://localhost:27017/SuperBrokers")
 
