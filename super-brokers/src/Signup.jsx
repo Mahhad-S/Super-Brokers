@@ -2,36 +2,38 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
+import './assets/Signup.css';
 
 function Signup() {
-    const [name, setName] = useState()
-    const [email, setEmail] = useState()
-    const [password, setPassword] = useState()
-    const navigate = useNavigate()
+    const [name, setName] = useState();
+    const [email, setEmail] = useState();
+    const [password, setPassword] = useState();
+    const navigate = useNavigate();
 
     const handleSubmit = (e) => {
-        e.preventDefault()
+        e.preventDefault();
         axios.post('http://localhost:3001/register', {name, email, password})
-        .then(result => {console.log(result)
-            navigate('/login')
+        .then(result => {
+            console.log(result);
+            navigate('/login');
         })
-        .catch(err => console.log(err))
-    }
+        .catch(err => console.log(err));
+    };
     
     return (
-        <div className="d-flex justify-content-center align-items-center bg-secondary vh-100">
-            <div className="bg-white p-3 rounded -25">
+        <div className="signup-container">
+            <div className="signup-box">
                 <h2>Register</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">
-                        <label htmlFor="email">
+                        <label htmlFor="name">
                             <strong>Name</strong>
                         </label>
                         <input 
                             type="text"
                             placeholder="Enter Name"
                             autoComplete="off"
-                            name="email"
+                            name="name"
                             className="form-control rounded-0"
                             onChange={(e) => setName(e.target.value)}
                         />
@@ -50,7 +52,7 @@ function Signup() {
                         />
                     </div>
                     <div className="mb-3">
-                        <label htmlFor="email">
+                        <label htmlFor="password">
                             <strong>Password</strong>
                         </label>
                         <input 
@@ -65,13 +67,13 @@ function Signup() {
                         Register
                     </button>
                 </form>
-                <p>Already Have an Account</p>
-                <Link to="/login" className="btn btn-default border w-100 bg-light rounded-0 text-decoration-none">
+                <p>Already Have an Account?</p>
+                <Link to="/login" className="login-link">
                     Login
                 </Link>
             </div>
         </div>
-    )
+    );
 }
 
 export default Signup;
