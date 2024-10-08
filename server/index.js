@@ -1,16 +1,19 @@
-const express = require('express')
-const mongoose = require('mongoose')
-const cors = require('cors')
-const UserModel = require('./models/user')
+const express = require('express');
+const connectDB = require('./db');
+const cors = require('cors');
+const UserModel = require('./models/user');
 const path = require("path");
+const tradeRoutes = require('./routes/trades');
+require('dotenv').config();
 
-const app = express()
+const app = express();
+
+connectDB();
+
 app.use(express.json())
 app.use(cors({
     origin: "http://localhost:3001"
 }))
-
-mongoose.connect("mongodb://localhost:27017/SuperBrokers")
 
 app.post("/login", (req, res) => {
     const {email, password} = req.body;
@@ -33,6 +36,9 @@ app.post('/register', (req, res) => {
     .then(users => res.json(users))
     .catch(err => res.json(err))
 })
+
+// Use the trade routes under /api/trades
+app.use('/api/trades', tradeRoutes); 
 
 // Serve static files from the React app's build directory
 app.use(express.static(path.join(__dirname, '../super-brokers/dist')));
