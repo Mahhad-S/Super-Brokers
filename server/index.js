@@ -48,6 +48,6 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../super-brokers/dist', 'index.html'));
 });
 
-app.listen(3001, () => {
+app.listen(process.env.PORT || 3001, () => {
     console.log("server is running")
 })
