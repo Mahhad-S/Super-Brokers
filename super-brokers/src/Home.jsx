@@ -11,7 +11,7 @@ function Home() {
                         <img 
                             src="/images/Sb-logo.png" // Replace with the path to your PNG logo
                             alt="Logo" 
-                            style={{ width: '100px', height: '100px', border: '0px' }} // Adjust height as needed
+                            style={{ width: '100px', height: '100px', border: '0px', zIndex: 2}} // Adjust height as needed
                         />
                     </div>
 

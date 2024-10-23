@@ -42,6 +42,7 @@ app.use('/api/trades', tradeRoutes);
 
 // Serve static files from the React app's build directory
 app.use(express.static(path.join(__dirname, '../super-brokers/dist')));
+app.use('/images', express.static(path.join(__dirname, '../super-brokers/images')));
 
 // Handle React routing, return all requests to the React app
 app.get('*', (req, res) => {
