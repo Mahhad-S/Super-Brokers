@@ -37,7 +37,7 @@ function Help() {
                                 color: 'inherit' 
                             }}
                         >
-                            Dashboard
+                            DASHBOARD
                         </Link>
                     </div>
                     <div className="col-auto d-flex justify-content-center align-items-center">
@@ -60,7 +60,7 @@ function Help() {
                                 color: 'inherit' 
                             }}
                         >
-                            About
+                            ABOUT
                         </Link>
                     </div>
                     <div className="col-auto d-flex justify-content-center align-items-center">
@@ -83,14 +83,14 @@ function Help() {
                                 color: 'inherit' 
                             }}
                         >
-                            Help
+                            HELP
                         </Link>
                     </div>
                 </div>
             </div>
-            
         </div>
     );
 }
+
 
 export default Help;
