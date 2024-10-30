@@ -6,6 +6,8 @@ import App from './App.jsx';
 import Signup from './Signup.jsx';
 import Login from './Login.jsx';
 import Home from './Home.jsx';
+import Help from './Help';
+
 import Dashboard from './Dashboard.jsx';
 import About from './About.jsx';
 import Help from './Help.jsx';
@@ -20,6 +22,7 @@ root.render(
         <Route path="/register" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/home" element={<Home />} />
+        <Route path="/help" element={<Help />} />
         <Route path="/Dashboard" element={<Dashboard />} />
         <Route path="/About" element={<About />} />
         <Route path="/Help" element={<Help />} />
