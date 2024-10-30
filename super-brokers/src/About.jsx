@@ -1,22 +1,10 @@
 import React from 'react';
-<<<<<<< HEAD
-
-function Dashboard() {
-    return (
-        <div>
-            <h1>Dashboard</h1>
-        </div>
-    )
-}
-
-export default Dashboard;
-=======
 import { Link } from "react-router-dom";
-function Dashboard() {
+function About() {
     return (
         <div className="d-flex flex-column min-vh-100 bg-secondary position-relative">
             {/* Hot Bar at the top with brown background */}
-            <div className="hot-bar w-100" style={{ backgroundColor: '#FF0000' }}>
+            <div className="hot-bar w-100" style={{ backgroundColor: '#00FF00' }}>
                 <div className="row align-items-center no-gutters">
                     {/* Logo on the left */}
                     <div className="col-auto d-flex align-items-center">
@@ -27,8 +15,8 @@ function Dashboard() {
                         />
                     </div>
 
-                    {/* Tabs as Buttons */}
-                    <div className="col-auto d-flex justify-content-center align-items-center">
+                     {/* Tabs as Buttons */}
+                     <div className="col-auto d-flex justify-content-center align-items-center">
                         <Link to="/Dashboard"
                             className="folder-tab text-center" 
                             style={{
@@ -175,5 +163,4 @@ function Dashboard() {
     );
 }
 
-export default Dashboard;
->>>>>>> d458d8e9c9ce668365aac15352ce1135f248195f
+export default About;

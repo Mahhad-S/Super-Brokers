@@ -16,6 +16,10 @@ function App() {
           <Route path='/login' element={<Login />}></Route>
           <Route path='/home' element={<Home />}></Route>
           <Route path='/' element={<Home />}></Route>
+          <Route path="/home" element={<Home />} />
+          <Route path="/Dashboard" element={<Dashboard />} />
+          <Route path="/About" element={<About />} />
+          <Route path="/Help" element={<Help />} />
         </Routes>
       </BrowserRouter>
     </div>

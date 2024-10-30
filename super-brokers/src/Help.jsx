@@ -1,22 +1,24 @@
 import React from 'react';
+import { Link } from "react-router-dom";
 
-function Home() {
+function Help() {
     return (
-        <div className="main-wrapper">
-            {/* Hot Bar at the top */}
-            <div className="hot-bar">
+        <div className="d-flex flex-column min-vh-100 bg-secondary position-relative">
+            {/* Hot Bar at the top with brown background */}
+            <div className="hot-bar w-100" style={{ backgroundColor: '#0000FF' }}>
                 <div className="row align-items-center no-gutters">
                     {/* Logo on the left */}
                     <div className="col-auto d-flex align-items-center">
                         <img 
-                            src="/images/Sb-logo.png" 
-                            alt="Logo"
+                            src="/images/Sb-logo.png" // Replace with the path to your PNG logo
+                            alt="Logo" 
+                            style={{ width: '100px', height: '100px', border: '0px' }} // Adjust height as needed
                         />
                     </div>
 
                     {/* Tabs as Buttons */}
                     <div className="col-auto d-flex justify-content-center align-items-center">
-                        <button 
+                        <Link to="/Dashboard"
                             className="folder-tab text-center" 
                             style={{
                                 borderTopLeftRadius: '10px',
@@ -29,15 +31,17 @@ function Home() {
                                 height: '40px',
                                 marginTop: '60px',
                                 zIndex: 1,
-                                cursor: 'pointer', // Make it clear it's clickable
-                                outline: 'none', // Remove outline on focus
+                                cursor: 'pointer', 
+                                outline: 'none',
+                                textDecoration: 'none', 
+                                color: 'inherit' 
                             }}
                         >
                             Dashboard
                         </Link>
                     </div>
                     <div className="col-auto d-flex justify-content-center align-items-center">
-                        <button 
+                    <Link to="/About"
                             className="folder-tab text-center" 
                             style={{
                                 borderTopLeftRadius: '10px',
@@ -50,15 +54,17 @@ function Home() {
                                 height: '40px',
                                 marginTop: '60px',
                                 zIndex: 1,
-                                cursor: 'pointer', // Make it clear it's clickable
-                                outline: 'none', // Remove outline on focus
+                                cursor: 'pointer', 
+                                outline: 'none',
+                                textDecoration: 'none', 
+                                color: 'inherit' 
                             }}
                         >
                             About
-                        </button>
+                        </Link>
                     </div>
                     <div className="col-auto d-flex justify-content-center align-items-center">
-                        <button 
+                    <Link to="/Help"
                             className="folder-tab text-center" 
                             style={{
                                 borderTopLeftRadius: '10px',
@@ -71,46 +77,20 @@ function Home() {
                                 height: '40px',
                                 marginTop: '60px',
                                 zIndex: 1,
-                                cursor: 'pointer', // Make it clear it's clickable
-                                outline: 'none', // Remove outline on focus
+                                cursor: 'pointer', 
+                                outline: 'none',
+                                textDecoration: 'none', 
+                                color: 'inherit' 
                             }}
                         >
                             Help
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </div>
-
-            {/* Main content area */}
-            <div className="main-content d-flex mt-3">
-                {/* Left side: Search bar and rows */}
-                <div className="d-flex flex-fill flex-column" style={{ marginRight: '150px', marginLeft: '100px' }}>
-                    {/* Search Bar */}
-                    <div className="d-flex mb-4">
-                        <input 
-                            type="text" 
-                            className="form-control search-bar" 
-                            placeholder="Search..."
-                        />
-                        <button className="btn btn-primary">Search</button>
-                    </div>
-                    <div style={{ marginBottom: '20px', fontSize: '20px' }}>STOCK</div>
-                    
-                    {/* Rows */}
-                    <div className="bg-light p-4 mb-4 text-center">Row 1</div>
-                    <div className="bg-light p-4 mb-4 text-center">Row 2</div>
-                    <div className="bg-light p-4 text-center">Row 3</div>
-                </div>
-
-                {/* Right side: Bubble rows */}
-                <div className="d-flex flex-column">
-                    <div className="bubble mb-4 text-center">Bubble 1</div>
-                    <div className="bubble mb-4 text-center">Bubble 2</div>
-                    <div className="bubble text-center">Bubble 3</div>
-                </div>
-            </div>
+            
         </div>
     );
 }
 
-export default Home;
+export default Help;
