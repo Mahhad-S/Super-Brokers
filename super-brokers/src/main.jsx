@@ -21,6 +21,7 @@ root.render(
         <Route path="/register" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/home" element={<Home />} />
+        <Route path="/help" element={<Help />} />
         <Route path="/Dashboard" element={<Dashboard />} />
         <Route path="/About" element={<About />} />
         <Route path="/Help" element={<Help />} />
