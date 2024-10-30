@@ -26,13 +26,13 @@ function Login() {
     return (
         <div className="login-wrapper d-flex">
             <div className="image-holder">
-                {/* Image or placeholder for the left side */}
+                <img src="/images/stock.jpg" className="stock-img"/>
             </div>
             <div className="login-form-container d-flex justify-content-center align-items-center">
                 <img 
-                            src="/images/Sb-logo.png" 
-                            alt="Logo"
-                            className="logo"
+                    src="/images/Sb-logo.png" 
+                    alt="Logo"
+                    className="logo"
                 />
                 <div className="login-box p-4 bg-white shadow-sm rounded">
                     <h2 className="text-center mb-4">Log in</h2>

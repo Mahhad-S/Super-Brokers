@@ -15,8 +15,12 @@ body {
 }
 
 .image-holder {
-    width: 100%;
+    width: 50%;
     background-color: #d3d3d3; /* Keep the left side grey or replace with an image */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 }
 
 /* Form container */

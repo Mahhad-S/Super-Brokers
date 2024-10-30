@@ -4,7 +4,7 @@ import './style/Home.css';  // Import the CSS file
 
 function Home() {
     return (
-        <div className="d-flex flex-column min-vh-100 bg-secondary position-relative">
+        <div className="main-wrapper">
             {/* Hot Bar at the top */}
             <div className="hot-bar">
                 <div className="row align-items-center no-gutters">

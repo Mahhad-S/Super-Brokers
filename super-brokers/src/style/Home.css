@@ -1,8 +1,9 @@
 /* Styles for the Home component */
-.d-flex.flex-column.min-vh-100.bg-secondary.position-relative {
+.main-wrapper {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    min-width: 200vh;
     background-color: #6c757d;
     position: relative;
 }
