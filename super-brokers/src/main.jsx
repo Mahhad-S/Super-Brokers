@@ -7,9 +7,9 @@ import Signup from './Signup.jsx';
 import Login from './Login.jsx';
 import Home from './Home.jsx';
 import Dashboard from './Dashboard.jsx';
-
 import About from './About.jsx';
 import Help from './Help.jsx';
+
 const rootElement = document.getElementById('root');
 const root = createRoot(rootElement);
 

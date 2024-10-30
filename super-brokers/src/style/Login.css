@@ -7,15 +7,17 @@ body {
     align-items: center;
     min-height: 100vh;
 }
+
 .login-wrapper {
+    display: flex;
     width: 1300px;
     height: 700px;
     padding: 30px 40px;
     background-color: #f0f0f0; /* Light grey for the page background */
 }
 
-.image-holder {
-    width: 50%;
+.login-image-holder {
+    width: 100%;
     background-color: #d3d3d3; /* Keep the left side grey or replace with an image */
     display: flex;
     align-items: center;
@@ -23,20 +25,26 @@ body {
     overflow: hidden;
 }
 
+.login-stock-img {
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+}
+
 /* Form container */
 .login-form-container {
+    display: flex;
     width: 100%;
+    height: auto;
     background-color: #f0f0f0;
     flex-direction: column;
     display: flex;
     align-items: center;
-    justify-content: center;
 }
 
-.logo {
-    width: 100px; /* Adjust width as needed */
+.login-form-container .logo {
+    width: 140px; /* Adjust width as needed */
     height: auto; /* Maintain aspect ratio */
-    margin-bottom: 20px; /* Space between logo and login box */
 }
 
 /* Login box styling */
@@ -49,8 +57,28 @@ body {
     background-color: #ffffff;
 }
 
+.login-box h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.login-form-label {
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #333333; /* Dark grey for labels */
+}
+
+.login-username {
+    margin-bottom: 15px;
+}
+
+.login-password {
+    margin-bottom: 15px;
+    position: relative;
+}
+
 /* Input styles */
-.input-rounded {
+.login-input-rounded {
     border-radius: 8px;
     height: 48px;
     font-size: 16px;
@@ -61,67 +89,12 @@ body {
     transition: all 0.3s ease;
 }
 
-.input-rounded:focus {
+.login-input-rounded:focus {
     background-color: #ffffff;
     border-color: #001f3f; /* Navy border when focused */
 }
 
-/* Button styles */
-.btn-primary {
-    background-color: #001f3f; /* Navy as the primary color */
-    border-color: #001f3f;
-    border-radius: 8px;
-    height: 48px;
-    font-size: 18px;
-    font-weight: bold;
-}
-
-.btn-primary:hover {
-    background-color: #001836; /* Slightly darker navy on hover */
-    border-color: #001836;
-}
-
-.btn-primary:active {
-    background-color: #e67e22; /* Orange as the accent when active */
-    border-color: #e67e22;
-}
-
-/* Button styles for secondary links */
-.btn-default {
-    background-color: #d3d3d3; /* Light grey for secondary buttons */
-    border-color: #d3d3d3;
-    color: #000000;
-    font-weight: 500;
-}
-
-.btn-default:hover {
-    background-color: #bcbcbc; /* Slightly darker grey on hover */
-    color: #000000;
-}
-
-/* Label styling */
-.form-label {
-    font-weight: 500;
-    margin-bottom: 8px;
-    color: #333333; /* Dark grey for labels */
-}
-
-/* Centered text and margins */
-.text-center {
-    margin-top: 20px;
-}
-
-/* Link styling */
-.text-primary {
-    color: #e67e22; /* Orange as accent for text links */
-}
-
-.text-primary:hover {
-    color: #cc6c1b; /* Slightly darker orange on hover */
-    text-decoration: underline;
-}
-
-.password-toggle-icon {
+.login-password-toggle-icon {
     font-size: 18px;         /* Adjust the icon size if needed */
     color: #666;             /* Grey color for the icon */
     position: absolute;      /* Absolute positioning relative to the parent (input field) */
@@ -130,6 +103,33 @@ body {
     cursor: pointer;         /* Pointer cursor for better user experience */
 }
 
-.password-toggle-icon:hover {
+.login-password-toggle-icon:hover {
     color: #001f3f;  /* Navy color when hovered */
+}
+
+/* Button styles */
+.login-submit-button {
+    background-color: #001f3f; /* Navy as the primary color */
+    border-color: #001f3f;
+    border-radius: 8px;
+    height: 48px;
+    width: 100%;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+}
+
+/* Centered text and margins */
+.login-box p {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Link styling */
+p .login-text-primary {
+    text-decoration: none;
+}
+
+p .login-text-primary:hover {
+    text-decoration: none;
 }

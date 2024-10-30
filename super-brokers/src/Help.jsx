@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import "./style/Help.css";
 
 function Help() {
     const [openItems, setOpenItems] = useState({});
@@ -30,47 +33,41 @@ function Help() {
     };
 
     return (
-        <div className="container mt-4 pb-4">
-            <h2 className="mb-4">Help Center</h2>
-            <div className="help-items">
-                {helpItems.map((item, index) => (
-                    <div 
-                        key={index}
-                        className="mb-3"
-                        style={{
-                            backgroundColor: '#f8f9fa',
-                            borderRadius: '8px',
-                            overflow: 'hidden'
-                        }}
-                    >
-                        <button
-                            onClick={() => toggleItem(index)}
-                            className="w-100 text-start border-0 p-3"
-                            style={{
-                                backgroundColor: '#f0f0f0',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center'
-                            }}
-                        >
-                            <span style={{ fontWeight: '500' }}>{item.title}</span>
-                            <span>{openItems[index] ? '−' : '+'}</span>
-                        </button>
-                        
-                        {openItems[index] && (
-                            <div 
-                                className="p-3"
-                                style={{
-                                    backgroundColor: 'white',
-                                    borderTop: '1px solid #dee2e6'
-                                }}
-                            >
-                                {item.content}
-                            </div>
-                        )}
+        <div className="help-main-wrapper">
+            <div className="help-hot-bar">
+                <div className="dashboard-row">
+                    {/* Logo on the left */}
+                    <div className="dashboard-logo-img">
+                        <img src="/images/Sb-logo.png" alt="Logo"/>
                     </div>
-                ))}
+                    {/* Tabs as Buttons */}
+                    <div className="dashboard-nav-col">
+                        <Link to="/Dashboard" className="dashboard-tab-link" >DASHBOARD</Link>
+                    </div>
+                    <div className="dashboard-nav-col">
+                        <Link to="/About" className="dashboard-tab-link" >ABOUT</Link>
+                    </div>
+                    <div className="dashboard-nav-col">
+                        <Link to="/Help" className="dashboard-tab-link" >HELP</Link>
+                    </div>
+                </div>
+            </div>
+            <div className="help-main-content">
+                <div className="help-items">
+                    {helpItems.map((item, index) => (
+                        <div key={index} className="items-wrapper">
+                            <button onClick={() => toggleItem(index)} className="items-content">
+                                <span >{item.title}</span>
+                                <span>{openItems[index] ? '−' : '+'}</span>
+                            </button>
+                            {openItems[index] && (
+                                <div className="items-expand">
+                                    {item.content}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );

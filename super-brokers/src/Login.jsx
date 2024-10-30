@@ -24,52 +24,50 @@ function Login() {
     };
 
     return (
-        <div className="login-wrapper d-flex">
-            <div className="image-holder">
-                <img src="/images/stock.jpg" className="stock-img"/>
+        <div className="login-wrapper">
+            <div className="login-image-holder">
+                <img src="/images/stock.jpg" className="login-stock-img"/>
             </div>
-            <div className="login-form-container d-flex justify-content-center align-items-center">
+            <div className="login-form-container">
                 <img 
                     src="/images/Sb-logo.png" 
                     alt="Logo"
                     className="logo"
                 />
-                <div className="login-box p-4 bg-white shadow-sm rounded">
-                    <h2 className="text-center mb-4">Log in</h2>
+                <div className="login-box">
+                    <h2>Log in</h2>
                     <form onSubmit={handleSubmit}>
-                        <div className="mb-3">
-                            <label htmlFor="email" className="form-label">Username</label>
+                        <div className="login-username">
+                            <label htmlFor="email" className="login-form-label">Username</label>
                             <input 
                                 type="email"
                                 placeholder="Enter Username"
                                 autoComplete="off"
                                 name="email"
-                                className="form-control input-rounded"
+                                className="form-control login-input-rounded"
                                 onChange={(e) => setEmail(e.target.value)}
                             />
                         </div>
-                        <div className="mb-3 position-relative">
-                            <label htmlFor="password" className="form-label">Password</label>
+                        <div className="login-password">
+                            <label htmlFor="password" className="login-form-label">Password</label>
                             <input 
                                 type={showPassword ? "text" : "password"} // Toggle input type based on showPassword state
                                 placeholder="Enter Password"
                                 name="password"
-                                className="form-control input-rounded"
+                                className="form-control login-input-rounded"
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                             {/* Icon to toggle show/hide password */}
                             <span 
-                                className="password-toggle-icon" 
+                                className="login-password-toggle-icon" 
                                 onClick={() => setShowPassword(!showPassword)}
                             >
                                 {showPassword ? <FaEyeSlash /> : <FaEye />}
                             </span>
                         </div>
-                        <button type="submit" className="btn btn-primary w-100 btn-lg input-rounded">Log In</button>
+                        <button type="submit" className="login-submit-button">Log In</button>
                     </form>
-                    <p className="text-center mt-3">
-                        Don't have an account? <Link to="/register" className="text-primary">Sign up</Link>
-                    </p>
+                    <p>Don't have an account?<Link to="/register" className="login-text-primary"> Sign up</Link></p>
                 </div>
             </div>
         </div>
