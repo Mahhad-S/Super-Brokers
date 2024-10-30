@@ -1,11 +1,10 @@
 import React from 'react';
-import { useState } from "react";
 import { Link } from "react-router-dom";
-function Home() {
+function About() {
     return (
         <div className="d-flex flex-column min-vh-100 bg-secondary position-relative">
             {/* Hot Bar at the top with brown background */}
-            <div className="hot-bar w-100" style={{ backgroundColor: '#ADD8E6' }}>
+            <div className="hot-bar w-100" style={{ backgroundColor: '#00FF00' }}>
                 <div className="row align-items-center no-gutters">
                     {/* Logo on the left */}
                     <div className="col-auto d-flex align-items-center">
@@ -16,8 +15,8 @@ function Home() {
                         />
                     </div>
 
-                    {/* Tabs as Buttons */}
-                    <div className="col-auto d-flex justify-content-center align-items-center">
+                     {/* Tabs as Buttons */}
+                     <div className="col-auto d-flex justify-content-center align-items-center">
                         <Link to="/Dashboard"
                             className="folder-tab text-center" 
                             style={{
@@ -164,4 +163,4 @@ function Home() {
     );
 }
 
-export default Home;
+export default About;
