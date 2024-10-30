@@ -15,8 +15,8 @@ function Dashboard() {
                         />
                     </div>
 
-                    {/* Tabs as Buttons */}
-                    <div className="col-auto d-flex justify-content-center align-items-center">
+    {/* Tabs as Buttons */}
+    <div className="col-auto d-flex justify-content-center align-items-center">
                         <Link to="/Dashboard"
                             className="folder-tab text-center" 
                             style={{
@@ -36,7 +36,7 @@ function Dashboard() {
                                 color: 'inherit' 
                             }}
                         >
-                            Dashboard
+                            DASHBOARD
                         </Link>
                     </div>
                     <div className="col-auto d-flex justify-content-center align-items-center">
@@ -59,7 +59,7 @@ function Dashboard() {
                                 color: 'inherit' 
                             }}
                         >
-                            About
+                            ABOUT
                         </Link>
                     </div>
                     <div className="col-auto d-flex justify-content-center align-items-center">
@@ -82,7 +82,7 @@ function Dashboard() {
                                 color: 'inherit' 
                             }}
                         >
-                            Help
+                            HELP
                         </Link>
                     </div>
                 </div>
@@ -162,5 +162,6 @@ function Dashboard() {
         </div>
     );
 }
+
 
 export default Dashboard;

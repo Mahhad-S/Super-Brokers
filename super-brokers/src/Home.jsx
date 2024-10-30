@@ -37,7 +37,7 @@ function Home() {
                                 color: 'inherit' 
                             }}
                         >
-                            Dashboard
+                            DASHBOARD
                         </Link>
                     </div>
                     <div className="col-auto d-flex justify-content-center align-items-center">
@@ -60,7 +60,7 @@ function Home() {
                                 color: 'inherit' 
                             }}
                         >
-                            About
+                            ABOUT
                         </Link>
                     </div>
                     <div className="col-auto d-flex justify-content-center align-items-center">
@@ -83,7 +83,7 @@ function Home() {
                                 color: 'inherit' 
                             }}
                         >
-                            Help
+                            HELP
                         </Link>
                     </div>
                 </div>
