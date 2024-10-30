@@ -1,16 +1,4 @@
 import React from 'react';
-<<<<<<< HEAD
-
-function Dashboard() {
-    return (
-        <div>
-            <h1>Dashboard</h1>
-        </div>
-    )
-}
-
-export default Dashboard;
-=======
 import { Link } from "react-router-dom";
 function Dashboard() {
     return (
@@ -176,4 +164,3 @@ function Dashboard() {
 }
 
 export default Dashboard;
->>>>>>> d458d8e9c9ce668365aac15352ce1135f248195f
