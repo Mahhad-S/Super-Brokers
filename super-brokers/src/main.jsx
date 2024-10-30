@@ -6,8 +6,6 @@ import App from './App.jsx';
 import Signup from './Signup.jsx';
 import Login from './Login.jsx';
 import Home from './Home.jsx';
-import Help from './Help';
-
 import Dashboard from './Dashboard.jsx';
 import About from './About.jsx';
 import Help from './Help.jsx';
