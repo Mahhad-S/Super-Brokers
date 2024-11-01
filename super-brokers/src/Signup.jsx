@@ -27,7 +27,7 @@ function Signup() {
             </div>
             <div className="signup-form-container">
                 <img 
-                    src="/images/Sb-logo.png" 
+                    src="/images/SB-banner.png" 
                     alt="Logo"
                     className="logo"
                 />

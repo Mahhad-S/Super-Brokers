@@ -30,7 +30,7 @@ function Login() {
             </div>
             <div className="login-form-container">
                 <img 
-                    src="/images/Sb-logo.png" 
+                    src="/images/SB-banner.png" 
                     alt="Logo"
                     className="logo"
                 />
