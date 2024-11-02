@@ -1,0 +1,151 @@
+/* Wrapper and general layout */
+.dashboard-main-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-width: 200vh;
+    background-color: #6c757d;
+    position: relative;
+    flex-wrap: wrap;
+}
+
+/* Hot Bar */
+.dashboard-hot-bar {
+    width: 100%;
+    background-color: #269674;
+}
+
+.dashboard-row {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    gap: 20px;
+}
+
+.dashboard-logo-img, img {
+    width: 100px;
+    height: 100px;
+    border: 0;
+    z-index: 2;
+}
+
+.dashboard-nav-col {
+    display: inline-block;
+    width: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Tab Links */
+.dashboard-tab-link {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-bottom: none;
+    padding: 7px 20px;
+    font-size: 16px;
+    height: 40px;
+    margin-top: 60px;
+    z-index: 1;
+    cursor: pointer;
+    outline: none;
+    text-decoration: none;
+    color: inherit;
+    text-align: center;
+}
+
+/* Main Content */
+.dashboard-main-content {
+    width: calc(100% - 100px);
+    margin: 20px auto;
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.3);
+    padding: 20px;
+    display: flex;
+}
+
+/* Left and Right Sections */
+.dashboard-content-left {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    margin-right: 150px;
+    margin-left: 100px;
+}
+
+.dashboard-content-right {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+/* Search Bar */
+.dashboard-search-bar {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.input {
+    flex: 1;
+}
+
+.dashboard-search-button {
+    display: inline-block;
+    font-weight: 400;
+    color: #fff;
+    text-align: center;
+    vertical-align: middle;
+    user-select: none;
+    background-color: #3786fd;
+    border: 1px solid #3786fd;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 0.375rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    margin-left: 0.5rem; /* ms-2 */
+}
+
+.dashboard-search-button:hover {
+    background-color: #266bd3;
+    border-color: #266bd3;
+}
+
+/* Stock Section */
+.dashboard-stock-name {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+/* Rows */
+.dashboard-row-content {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 20px 0;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+/* Bubbles */
+.dashboard-bubble {
+    background-color: #f8f9fa;
+    border-radius: 50px; /* Makes the bubble shape */
+    padding: 5px; /* Adjusted padding for smaller bubbles */
+    border: 1px solid #ddd; /* Border for bubble */
+    min-width: 200px; /* Decreased minimum width for bubble */
+    min-height: 200px; /* Decreased minimum height for bubble */
+    display: flex;
+    margin-right: 150px;
+    margin-left: 200px;
+    align-items: center; /* Centering text vertically */
+    justify-content: center; /* Centering text horizontally */
+    transition: all 0.3s ease; /* Smooth transition */
+    margin-bottom: 20px;
+    text-align: center;
+}
