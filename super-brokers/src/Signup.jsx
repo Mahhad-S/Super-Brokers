@@ -9,6 +9,11 @@ function Signup() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
+    const [showDropdown, setShowDropdown] = useState(false);
+
+    const toggleDropdown = () => {
+        setShowDropdown(!showDropdown);
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -22,53 +27,69 @@ function Signup() {
 
     return (
         <div className="signup-wrapper">
-            <div className="signup-image-holder">
-                <img src="/images/stock.jpg" className="signup-stock-img"/>
+            <div className="signup-navbar">
+                <div className="signup-navbar-user">
+                    <button className="signup-user-icon" onClick={toggleDropdown}>
+                        <img src="/images/SB-logo.png" alt="User Icon" />
+                    </button>
+                    {showDropdown && (
+                        <div className="signup-dropdown-menu">
+                            <Link to="/" className="signup-dropdown-item">Home</Link>
+                            <Link to="/login" className="signup-dropdown-item">Login</Link>
+                            <Link to="/register" className="signup-dropdown-item">Sign Up</Link>
+                        </div>
+                    )}
+                </div>
             </div>
-            <div className="signup-form-container">
-                <img 
-                    src="/images/SB-banner.png" 
-                    alt="Logo"
-                    className="logo"
-                />
-                <div className="signup-box">
-                    <h2>Sign Up</h2>
-                    <form onSubmit={handleSubmit}>
-                        <div className="signup-username">
-                            <label htmlFor="name" className="signup-form-label">Name</label>
-                            <input 
-                                type="text"
-                                placeholder="Enter Name"
-                                autoComplete="off"
-                                name="name"
-                                className="form-control signup-input-rounded"
-                                onChange={(e) => setName(e.target.value)}
-                            />
-                        </div>
-                        <div className="signup-email">
-                            <label htmlFor="email" className="signup-form-label">Email</label>
-                            <input 
-                                type="email"
-                                placeholder="Enter Email"
-                                autoComplete="off"
-                                name="email"
-                                className="form-control signup-input-rounded"
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                        </div>
-                        <div className="signup-password">
-                            <label htmlFor="password" className="signup-form-label">Password</label>
-                            <input 
-                                type="password"
-                                placeholder="Enter Password"
-                                name="password"
-                                className="form-control signup-input-rounded"
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                        </div>
-                        <button type="submit" className="signup-submit-button">Register</button>
-                    </form>
-                    <p>Already have an account? <Link to="/login" className="signup-text-primary">Login</Link></p>
+            <div className="signup-main-content">
+                <div className="signup-image-holder">
+                    <img src="/images/stock.jpg" className="signup-stock-img"/>
+                </div>
+                <div className="signup-form-container">
+                    <img 
+                        src="/images/SB-banner.png" 
+                        alt="Logo"
+                        className="logo"
+                    />
+                    <div className="signup-box">
+                        <h2>Sign Up</h2>
+                        <form onSubmit={handleSubmit}>
+                            <div className="signup-username">
+                                <label htmlFor="name" className="signup-form-label">Name</label>
+                                <input 
+                                    type="text"
+                                    placeholder="Enter Name"
+                                    autoComplete="off"
+                                    name="name"
+                                    className="form-control signup-input-rounded"
+                                    onChange={(e) => setName(e.target.value)}
+                                />
+                            </div>
+                            <div className="signup-email">
+                                <label htmlFor="email" className="signup-form-label">Email</label>
+                                <input 
+                                    type="email"
+                                    placeholder="Enter Email"
+                                    autoComplete="off"
+                                    name="email"
+                                    className="form-control signup-input-rounded"
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
+                            </div>
+                            <div className="signup-password">
+                                <label htmlFor="password" className="signup-form-label">Password</label>
+                                <input 
+                                    type="password"
+                                    placeholder="Enter Password"
+                                    name="password"
+                                    className="form-control signup-input-rounded"
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
+                            </div>
+                            <button type="submit" className="signup-submit-button">Register</button>
+                        </form>
+                        <p>Already have an account? <Link to="/login" className="signup-text-primary">Login</Link></p>
+                    </div>
                 </div>
             </div>
         </div>

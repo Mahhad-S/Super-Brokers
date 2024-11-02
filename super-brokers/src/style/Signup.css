@@ -1,19 +1,75 @@
 /* General layout */
-body {
-    background-color: rgb(66, 66, 66);
+.signup-wrapper {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
     min-height: 100vh;
+    min-width: 200vh;
+    background-color: #6c757d;
+    flex-wrap: wrap;
+    align-items: center;
 }
 
-.signup-wrapper {
+.signup-main-content {
     display: flex;
     width: 1300px;
     height: 700px;
     padding: 30px 40px;
     background-color: #f0f0f0; /* Light grey for the page background */
+}
+
+.signup-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    background-color: #818b94;
+    position: relative;
+    width: 100%;
+}
+
+.signup-navbar-user {
+    position: relative;
+    margin-left: auto;
+    margin-right: 20px;
+}
+
+.signup-user-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    outline: none;
+}
+
+.signup-user-icon img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+}
+
+.signup-dropdown-menu {
+    position: absolute;
+    top: 70px; /* Adjust based on your navbar height */
+    right: 0;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    width: 150px;
+}
+
+.signup-dropdown-item {
+    padding: 10px 15px;
+    color: #333;
+    text-decoration: none;
+    text-align: center;
+    transition: background-color 0.2s ease;
+}
+
+.signup-dropdown-item:hover {
+    background-color: #f1f1f1;
 }
 
 .signup-image-holder {
