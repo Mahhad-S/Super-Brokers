@@ -6,28 +6,33 @@ import "./style/About.css";
 function About() {
     return (
         <div className="about-main-wrapper">
-            {/* Hot Bar at the top with brown background */}
+            {/* Top Navigation Bar */}
             <div className="about-hot-bar">
-                <div className="about-row">
-                    {/* Logo on the left */}
-                    <div className="about-logo-img">
-                        <img src="/images/Sb-logo.png" alt="Logo"/>
-                    </div>
-                    {/* Tabs as Buttons */}
-                    <div className="about-nav-col">
-                        <Link to="/Dashboard" className="about-tab-link" >DASHBOARD</Link>
-                    </div>
-                    <div className="about-nav-col">
-                        <Link to="/About" className="about-tab-link" >ABOUT</Link>
-                    </div>
-                    <div className="about-nav-col">
-                        <Link to="/Help" className="about-tab-link" >HELP</Link>
-                    </div>
+                <div className="about-logo-img">
+                    <img src="/images/Sb-logo.png" alt="Logo" />
+                </div>
+                {/* Navigation Links */}
+                <div className="about-nav-links">
+                    <Link to="/Dashboard" className="about-tab-link">Dashboard</Link>
+                    <Link to="/About" className="about-tab-link">About</Link>
+                    <Link to="/Help" className="about-tab-link">Help</Link>
                 </div>
             </div>
+
             {/* Main content area with blurred background */}
             <div className="about-main-content" >
-                
+                <div className='about-title-col'>
+                    <h1>Stock Trading Assistant</h1>
+                </div>
+                <div className='about-paragrah-col'>
+                    <p>Enhance your stock trading knowledge with our Stock Bot.
+                        Learn the essentials of buying and selling stocks through interactive,
+                        real-time guidance tailored to help you make informed decisions in the market.
+                    </p>
+                </div>
+                <div className='about-video-col'>
+                   <iframe src='/images/aboutImportantVideo.mp4' title='Important Video' sandbox="" allowFullScreen></iframe>
+                </div>
             </div>
         </div>
     );
