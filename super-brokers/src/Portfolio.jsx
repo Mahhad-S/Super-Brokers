@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import './style/Portafolio.css';
+import './style/Portfolio.css';
 
-function Portafolio() {
+function Portfolio() {
     const [expandedTickers, setExpandedTickers] = useState({});
 
     const toggleTicker = (ticker) => {
@@ -21,7 +21,7 @@ function Portafolio() {
                 </div>
                 {/* Navigation Links */}
                 <div className="porta-nav-links">
-                    <Link to="/Portafolio" className="porta-tab-link">Portfolio</Link>
+                    <Link to="/Portfolio" className="porta-tab-link">Portfolio</Link>
                     <Link to="/Dashboard" className="porta-tab-link">Dashboard</Link>
                     <Link to="/About" className="porta-tab-link">About</Link>
                     <Link to="/Help" className="porta-tab-link">Help</Link>
@@ -29,16 +29,16 @@ function Portafolio() {
             </div>
 
             {/* Main Content Area */}
-            <div className="porta-main-content">
+            <div className="porta-body-content">
                 {/* Trade History Sidebar */}
-                <aside className="trade-history">
+                <aside className="sidebar-content">
                     <h3>Trade History</h3>
                     <p>1/1/24 AAPL SELL <span className="positive">$500.00</span></p>
                     <p>1/2/24 AAPL BUY <span className="negative">$1000.10</span></p>
                 </aside>
 
                 {/* Portfolio Details */}
-                <section className="portfolio">
+                <section className="porta-main-content">
                     <h2>Buying Power <span className="buying-power">$X.XX</span></h2>
                     <div className="positions">
                         <h3>Held Positions</h3>
@@ -74,4 +74,4 @@ function Portafolio() {
     );
 }
 
-export default Portafolio;
+export default Portfolio;

@@ -61,7 +61,7 @@ body, html {
 }
 
 /* Main Content Area */
-.porta-main-content {
+.porta-body-content {
     display: grid;
     grid-template-columns: 200px 1fr;
     gap: 20px;
@@ -70,19 +70,19 @@ body, html {
 }
 
 /* Trade History Sidebar */
-.trade-history {
+.sidebar-content {
     background-color: #e0e0e0;
     padding: 20px;
     border-radius: 8px;
     color: #333;
 }
 
-.trade-history h3 {
+.sidebar-content h3 {
     font-size: 1.2em;
     margin-bottom: 15px;
 }
 
-.trade-history p {
+.sidebar-content p {
     margin-bottom: 10px;
 }
 
@@ -95,7 +95,7 @@ body, html {
 }
 
 /* Portfolio Section */
-.portfolio {
+.porta-main-content {
     padding: 20px;
     background-color: #fff;
     border-radius: 8px;
@@ -125,7 +125,6 @@ body, html {
     cursor: pointer;
     text-align: left;
     padding: 0;
-    display: flex;
     align-items: center;
     justify-content: start;
 }
