@@ -9,6 +9,7 @@ import Home from './Home.jsx';
 import Dashboard from './Dashboard.jsx';
 import About from './About.jsx';
 import Help from './Help.jsx';
+import Portafolio from './Portafolio.jsx';
 
 const rootElement = document.getElementById('root');
 const root = createRoot(rootElement);
@@ -25,6 +26,8 @@ root.render(
         <Route path="/Dashboard" element={<Dashboard />} />
         <Route path="/About" element={<About />} />
         <Route path="/Help" element={<Help />} />
+        <Route path="/portafolio" element={<Portafolio />} />
+        <Route path="/Portafolio" element={<Portafolio />} />
       </Routes>
     </Router>
   </StrictMode>
