@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import './style/Signup.css';  // Import the new CSS file for Signup styling
 
 function Signup() {
-    const [name, setName] = useState('');
+    const [username, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
@@ -17,12 +17,19 @@ function Signup() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.post('http://localhost:3001/register', { name, email, password })
-            .then(result => {
-                console.log(result);
-                navigate('/login');
-            })
-            .catch(err => console.log(err));
+        axios.post('http://localhost:3001/register', { username, email, password })
+          .then(result => {
+            console.log(result);
+            if (result.status === 201) {
+              navigate("/login");
+            } else {
+              alert(result.data.message); // Show error message
+            }
+          })
+          .catch(err => {
+            console.log(err);
+            alert(err.response?.data?.message || 'An error occurred'); // Show error message
+          });
     };
 
     return (
@@ -55,12 +62,12 @@ function Signup() {
                         <h2>Sign Up</h2>
                         <form onSubmit={handleSubmit}>
                             <div className="signup-username">
-                                <label htmlFor="name" className="signup-form-label">Name</label>
+                                <label htmlFor="username" className="signup-form-label">Name</label>
                                 <input 
                                     type="text"
                                     placeholder="Enter Name"
                                     autoComplete="off"
-                                    name="name"
+                                    name="username"
                                     className="form-control signup-input-rounded"
                                     onChange={(e) => setName(e.target.value)}
                                 />
