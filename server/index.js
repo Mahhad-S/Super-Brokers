@@ -4,6 +4,9 @@ const cors = require('cors');
 const UserModel = require('./models/user');
 const path = require("path");
 const tradeRoutes = require('./routes/trades');
+const stockRoutes = require('./routes/stockRoutes');
+const newsRoutes = require('.routes/newsRoutes');
+
 require('dotenv').config();
 
 const app = express();
@@ -37,8 +40,14 @@ app.post('/register', (req, res) => {
     .catch(err => res.json(err))
 })
 
-// Use the trade routes under /api/trades
+// Use the trade routes
 app.use('/api/trades', tradeRoutes); 
+
+// Use the stockRoutes routes
+app.use('/api/stocks', stockRoutes);
+
+// Use the newsRoutes routes
+app.use('/api/news', newsRoutes);
 
 // Serve static files from the React app's build directory
 app.use(express.static(path.join(__dirname, '../super-brokers/dist')));
