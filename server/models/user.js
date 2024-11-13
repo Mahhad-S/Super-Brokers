@@ -15,6 +15,10 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  virtualBalance: {
+    type: Number,
+    default: 50000, // Start with $50,000
+  },
   portfolio: [
     {
       stockSymbol: String,

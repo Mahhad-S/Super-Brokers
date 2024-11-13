@@ -8,46 +8,51 @@ router.post('/trade', async (req, res) => {
   const { userId, stockSymbol, transactionType, quantity, transactionValue } = req.body;
 
   try {
-    // Create new trade doc
-    const newTrade = new Trade({
-      userId,
-      stockSymbol,
-      transactionType,
-      quantity,
-      transactionValue,
-    });
-
-    // Save trade
-    await newTrade.save();
-
-    // Update user portfolio and trade hist
+    // Find user by ID
     const user = await User.findById(userId);
-    
-    // Update portfolio (buy/sell)
-    const stockIndex = user.portfolio.findIndex((stock) => stock.stockSymbol === stockSymbol);
+    if (!user) {
+      return res.status(404).json({ msg: 'User not found' });
+    }
 
+    // Calculate the total value of the transaction
+    const totalValue = quantity * transactionValue;
+
+    // Process buy or sell
     if (transactionType === 'buy') {
-      if (stockIndex >= 0) {
-        // If stock exists in portfolio update quantity and avg. price
-        const existingStock = user.portfolio[stockIndex];
-        const newTotalQuantity = existingStock.quantity + quantity;
-        const newAveragePrice = ((existingStock.quantity * existingStock.averagePrice) + transactionValue) / newTotalQuantity;
+      if (user.virtualBalance >= totalValue) {
+        // Deduct funds from virtual balance
+        user.virtualBalance -= totalValue;
 
-        user.portfolio[stockIndex].quantity = newTotalQuantity;
-        user.portfolio[stockIndex].averagePrice = newAveragePrice;
+        // Update portfolio
+        const stockIndex = user.portfolio.findIndex((stock) => stock.stockSymbol === stockSymbol);
+        if (stockIndex >= 0) {
+          // Update existing stock in portfolio
+          const existingStock = user.portfolio[stockIndex];
+          const newTotalQuantity = existingStock.quantity + quantity;
+          const newAveragePrice = ((existingStock.quantity * existingStock.averagePrice) + totalValue) / newTotalQuantity;
+
+          user.portfolio[stockIndex].quantity = newTotalQuantity;
+          user.portfolio[stockIndex].averagePrice = newAveragePrice;
+        } else {
+          // Add new stock to portfolio
+          user.portfolio.push({ stockSymbol, quantity, averagePrice: transactionValue });
+        }
       } else {
-        // If stock is new add to portfolio
-        user.portfolio.push({ stockSymbol, quantity, averagePrice: transactionValue / quantity });
+        return res.status(400).json({ msg: 'Insufficient virtual balance to complete the transaction' });
       }
     } else if (transactionType === 'sell') {
+      // Find the stock in portfolio
+      const stockIndex = user.portfolio.findIndex((stock) => stock.stockSymbol === stockSymbol);
       if (stockIndex >= 0) {
         const existingStock = user.portfolio[stockIndex];
 
-        // Only sells if user has enough quantity to sell
+        // Ensure user has enough shares to sell
         if (existingStock.quantity >= quantity) {
+          // Update portfolio and add funds to virtual balance
           existingStock.quantity -= quantity;
-          
-          // When quantity == 0 stock is removed from portfolio
+          user.virtualBalance += totalValue;
+
+          // Remove stock from portfolio if quantity == 0
           if (existingStock.quantity === 0) {
             user.portfolio.splice(stockIndex, 1);
           }
@@ -57,15 +62,25 @@ router.post('/trade', async (req, res) => {
       } else {
         return res.status(400).json({ msg: 'Stock not found in portfolio' });
       }
+    } else {
+      return res.status(400).json({ msg: 'Invalid transaction type' });
     }
 
-    // Add to user trade hist
-    user.tradeHistory.push(newTrade._id);
+    // Create new trade document
+    const newTrade = new Trade({
+      userId,
+      stockSymbol,
+      transactionType,
+      quantity,
+      transactionValue,
+    });
 
-    // Save user
+    // Save the trade and update user data
+    await newTrade.save();
+    user.tradeHistory.push(newTrade._id);
     await user.save();
 
-    res.json({ msg: 'Trade successful', trade: newTrade });
+    res.json({ msg: 'Trade successful', trade: newTrade, virtualBalance: user.virtualBalance });
   } catch (err) {
     console.error(err);
     res.status(500).send('Server error');
