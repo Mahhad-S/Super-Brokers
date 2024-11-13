@@ -14,13 +14,13 @@ router.post('/trade', async (req, res) => {
       return res.status(404).json({ msg: 'User not found' });
     }
 
-    // Calculate the total value of the transaction
+    // Calculate total value of transaction
     const totalValue = quantity * transactionValue;
 
     // Process buy or sell
     if (transactionType === 'buy') {
       if (user.virtualBalance >= totalValue) {
-        // Deduct funds from virtual balance
+        // Subtract funds from virtual balance
         user.virtualBalance -= totalValue;
 
         // Update portfolio

@@ -37,7 +37,7 @@ app.post("/login", (req, res) => {
 app.post('/register', (req, res) => {
     UserModel.create({
         ...req.body,
-    virtualBalance: 50000,
+    virtualBalance: 15000, // New users start with 15,000
     })
     .then(users => res.json(users))
     .catch(err => res.json(err))
