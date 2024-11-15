@@ -5,7 +5,8 @@ const UserModel = require('./models/user');
 const path = require("path");
 const tradeRoutes = require('./routes/trades');
 const stockRoutes = require('./routes/stockRoutes');
-const newsRoutes = require('.routes/newsRoutes');
+const newsRoutes = require('./routes/newsRoutes');
+const followRoutes = require('./routes/followRoutes');
 
 require('dotenv').config();
 
@@ -15,8 +16,8 @@ connectDB();
 
 app.use(express.json())
 app.use(cors({
-    origin: "http://localhost:3001"
-}))
+    origin: "http://localhost:5173"
+}));
 
 app.post("/login", (req, res) => {
     const {email, password} = req.body;
@@ -46,11 +47,14 @@ app.post('/register', (req, res) => {
 // Use the trade routes
 app.use('/api/trades', tradeRoutes); 
 
-// Use the stockRoutes routes
+// Use the stocks routes
 app.use('/api/stocks', stockRoutes);
 
-// Use the newsRoutes routes
+// Use the news routes
 app.use('/api/news', newsRoutes);
+
+// Use the follow routes
+app.use('/api/follow', followRoutes);
 
 // Serve static files from the React app's build directory
 app.use(express.static(path.join(__dirname, '../super-brokers/dist')));

@@ -1,14 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { getGeneralMarketNews } = require('../services/finnhubService');
+const { getGenMarketNews } = require('../services/finnhubService');
 
 // Endpoint to get general market news
 router.get('/market-news', async (req, res) => {
   try {
-    const news = await getGeneralMarketNews();
-    res.json(news);
+      const news = await getGenMarketNews();
+      res.json(news);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to retrieve market news' });
+      console.error('Failed to retrieve market news:', error.message);
+      res.status(500).json({ error: error.message || 'Failed to retrieve market news' });
   }
 });
 

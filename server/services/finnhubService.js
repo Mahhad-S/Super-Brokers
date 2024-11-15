@@ -4,6 +4,9 @@ require('dotenv').config();
 const FINNHUB_API_URL = 'https://finnhub.io/api/v1';
 const API_KEY = process.env.FINNHUB_API_KEY;
 
+// Log the API key to verify it is being loaded correctly
+console.log('FINNHUB API KEY:', API_KEY);
+
 // Fetch Company Profile based on Stock Symbol
 const getCompanyProfile = async (symbol) => {
     try {
@@ -99,17 +102,44 @@ const getBasicFinancials = async (symbol) => {
 // Fetch general news articles related to market
 const getGenMarketNews = async () => {
     try {
+        console.log('Attempting to fetch general market news from Finnhub API...');
         const response = await axios.get(`${FINNHUB_API_URL}/news`, {
             params: {
                 category: 'general',
                 token: API_KEY,
             },
         });
-        return response.data;
+
+        const allArticles = response.data;
+        console.log('Total articles retrieved:', allArticles.length);
+
+        // Get 5 random articles
+        const selectedArticles = getRandomArticles(allArticles, 5);
+        console.log('Selected 5 random articles:', selectedArticles);
+
+        return selectedArticles;
     } catch (error) {
-        console.error('Error fetching general market news:', error);
-        throw error;
+        // Log more detailed error information
+        if (error.response) {
+            // The server responded with a status code outside of the 2xx range
+            console.error('Error response from API:', error.response.data);
+            console.error('Status code:', error.response.status);
+        } else if (error.request) {
+            // The request was made but no response was received
+            console.error('No response received from API:', error.request);
+        } else {
+            // Something went wrong in setting up the request
+            console.error('Error setting up request:', error.message);
+        }
+
+        throw new Error('Failed to retrieve market news');
     }
+};
+
+// Helper function to select random articles
+const getRandomArticles = (articles, numberOfArticles) => {
+    const shuffled = articles.sort(() => 0.5 - Math.random()); // Shuffle the array
+    return shuffled.slice(0, numberOfArticles); // Get the first `numberOfArticles` elements
 };
 
 const getCompanyNews = async (symbol) => {

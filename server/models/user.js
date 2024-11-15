@@ -32,6 +32,11 @@ const UserSchema = new mongoose.Schema({
       ref: 'trade',
     },
   ],
+  followedStocks: [
+    {
+      type: String, // Stock symbol
+    },
+  ],
 });
 
 module.exports = mongoose.model('User', UserSchema);
