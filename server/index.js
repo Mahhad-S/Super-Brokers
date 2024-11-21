@@ -35,14 +35,28 @@ app.post("/login", (req, res) => {
     })
 })
 
-app.post('/register', (req, res) => {
-    UserModel.create({
-        ...req.body,
-    virtualBalance: 15000, // New users start with 15,000
-    })
-    .then(users => res.json(users))
-    .catch(err => res.json(err))
-})
+app.post("/register", async (req, res) => {
+    const { username, email, password } = req.body;
+    
+    try {
+        let user = await UserModel.findOne({ email });
+        if (user) {
+            console.log("Email already exists");
+            return res.status(400).json({ message: "Email already exists" });
+        }
+
+        user = new UserModel({ 
+            username, 
+            email, 
+            password, 
+        });
+        await user.save();
+        res.status(201).json({ message: 'User registered successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
 
 // Use the trade routes
 app.use('/api/trades', tradeRoutes); 
