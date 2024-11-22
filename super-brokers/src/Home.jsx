@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './style/Home.css';
 import { Link } from 'react-router-dom';
+import CandlestickChart from './CandlestickChart';
 
 function Home() {
     const [searchTerm, setSearchTerm] = useState('');
@@ -11,6 +12,7 @@ function Home() {
     const [newsArticles, setNewsArticles] = useState([]);
     const [searchError, setSearchError] = useState(null);
     const [newsError, setNewsError] = useState(null);
+    const [candlestickData, setCandlestickData] = useState(null); // State for candlestick data
 
     // Fetch general market news on component mount
     useEffect(() => {
@@ -27,6 +29,24 @@ function Home() {
 
         fetchMarketNews();
     }, []);
+
+    useEffect(() => {
+        const fetchCandlestickData = async () => {
+            if (!stockData || !stockData.profile || !stockData.profile.ticker) return;
+    
+            try {
+                const response = await fetch(`/api/alpha-vantage/candlestick-data?symbol=${stockData.profile.ticker}`);
+                if (!response.ok) throw new Error("Failed to fetch candlestick data");
+                const data = await response.json();
+                setCandlestickData(data);
+            } catch (error) {
+                console.error("Error fetching candlestick data:", error);
+                setCandlestickData(null); // Reset data to avoid rendering issues
+            }
+        };
+    
+        fetchCandlestickData();
+    }, [stockData]);
 
     // Fetch stock suggestions when the user presses "Enter"
     const handleKeyPress = async (e) => {
@@ -50,27 +70,29 @@ function Home() {
             // Fetch stock details
             const stockResponse = await axios.get(`http://localhost:3001/api/stocks/stock-info/${symbol}`);
             setStockData(stockResponse.data);
-
+    
             // Fetch stock price
             const priceResponse = await axios.get(`http://localhost:3001/api/stocks/stock-price/${symbol}`);
             setStockPrice(priceResponse.data);
-
+    
+            // Fetch candlestick data
+            const candlestickResponse = await axios.get(`http://localhost:3001/api/stocks/candlestick/${symbol}`);
+            setCandlestickData(candlestickResponse.data); // Update candlestick data
+    
             // Fetch related company news
             const newsResponse = await axios.get(`http://localhost:3001/api/news/company-news/${symbol}`);
-            const randomNews = newsResponse.data.sort(() => 0.5 - Math.random()).slice(0, 3); // Select 3 random articles
+            const randomNews = newsResponse.data.sort(() => 0.5 - Math.random()).slice(0, 3);
             setNewsArticles(randomNews);
-
+    
             setSearchError(null);
-            setSuggestions([]); // Clear suggestions after selection
-            setSearchTerm(''); // Clear search input after selection
-
-            // Start live price updates
-            startLiveUpdates(symbol);
+            setSuggestions([]);
+            setSearchTerm('');
         } catch (err) {
-            setSearchError('Failed to fetch stock information or company news. Please try again.');
+            setSearchError('Failed to fetch stock information or candlestick data. Please try again.');
             setStockData(null);
-            setStockPrice(null); // Clear stock price on error
-            setNewsArticles([]); // Clear news articles on error
+            setStockPrice(null);
+            setCandlestickData(null);
+            setNewsArticles([]);
         }
     };
 
@@ -163,6 +185,11 @@ function Home() {
                                     ${stockPrice.c} ({stockPrice.d > 0 ? '+' : ''}{stockPrice.dp}%)
                                 </span>
                             </div>
+                            {/* Candlestick Graph */}
+                            <div className="home-row-content">
+                                {candlestickData && <CandlestickChart data={candlestickData} />}
+                            </div>
+                            {/* Stock Metrics */}
                             <div className="home-row-content">
                                 <p>High Price (Day): ${stockPrice.h}</p>
                                 <p>Low Price (Day): ${stockPrice.l}</p>

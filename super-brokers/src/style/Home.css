@@ -190,3 +190,13 @@
 .stock-price.negative {
     color: red;
 }
+
+.chart-container {
+    width: 100%;
+    height: 400px;
+    margin: 20px auto;
+}
+
+canvas {
+    max-width: 100%;
+}
