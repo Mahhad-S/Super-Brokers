@@ -191,6 +191,7 @@ function Home() {
                             </div>
                             {/* Stock Metrics */}
                             <div className="home-row-content">
+                                <h2>{stockData.profile.name}</h2>
                                 <p>High Price (Day): ${stockPrice.h}</p>
                                 <p>Low Price (Day): ${stockPrice.l}</p>
                                 <p>Open Price: ${stockPrice.o}</p>
