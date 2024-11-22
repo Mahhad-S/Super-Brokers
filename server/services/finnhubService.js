@@ -64,9 +64,9 @@ const getSymbolLookup = async (query) => {
                 token: API_KEY,
             },
         });
-        return response.data;
+        return response.data; // Ensure this returns the correct structure
     } catch (error) {
-        console.error(`Error fetching symbol lookup for query "${query}": `, error);
+        console.error(`Error fetching symbol lookup for query "${query}":`, error.message);
         throw error;
     }
 };
@@ -114,8 +114,8 @@ const getGenMarketNews = async () => {
         console.log('Total articles retrieved:', allArticles.length);
 
         // Get 5 random articles
-        const selectedArticles = getRandomArticles(allArticles, 5);
-        console.log('Selected 5 random articles:', selectedArticles);
+        const selectedArticles = getRandomArticles(allArticles, 3);
+        console.log('Selected 3 random articles:', selectedArticles);
 
         return selectedArticles;
     } catch (error) {
@@ -169,6 +169,22 @@ const getCompanyNews = async (symbol) => {
     }
 };
 
+// Fetch stock symbols for the US exchange
+const getUSStockSymbols = async () => {
+    try {
+        const response = await axios.get(`${FINNHUB_API_URL}/stock/symbol`, {
+            params: {
+                exchange: 'US',
+                token: API_KEY,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching US stock symbols:', error);
+        throw error;
+    }
+};
+
 // Export the functions
 module.exports = {
   getCompanyProfile,
@@ -178,4 +194,5 @@ module.exports = {
   getBasicFinancials,
   getGenMarketNews,
   getCompanyNews,
+  getUSStockSymbols,
 };
