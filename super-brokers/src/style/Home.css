@@ -177,3 +177,16 @@
     background-color: #f0f0f0;
 }
 
+.stock-price {
+    font-size: 1.2rem;
+    margin-left: 10px;
+    font-weight: bold;
+}
+
+.stock-price.positive {
+    color: green;
+}
+
+.stock-price.negative {
+    color: red;
+}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'; // Added `useEffect`
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './style/Home.css';
 import { Link } from 'react-router-dom';
@@ -7,11 +7,28 @@ function Home() {
     const [searchTerm, setSearchTerm] = useState('');
     const [suggestions, setSuggestions] = useState([]);
     const [stockData, setStockData] = useState(null);
+    const [stockPrice, setStockPrice] = useState(null); // State for stock price
     const [newsArticles, setNewsArticles] = useState([]);
-    const [searchError, setSearchError] = useState(null); // Separate error for search
-    const [newsError, setNewsError] = useState(null); // Separate error for news
+    const [searchError, setSearchError] = useState(null);
+    const [newsError, setNewsError] = useState(null);
 
-    // Fetch stock suggestions on "Enter" key press
+    // Fetch general market news on component mount
+    useEffect(() => {
+        const fetchMarketNews = async () => {
+            try {
+                const response = await axios.get('http://localhost:3001/api/news/market-news');
+                setNewsArticles(response.data.slice(0, 3)); // Fetch 3 articles for general market news
+                setNewsError(null);
+            } catch (err) {
+                console.error('Error fetching market news:', err.message);
+                setNewsError('Failed to fetch market news. Please try again later.');
+            }
+        };
+
+        fetchMarketNews();
+    }, []);
+
+    // Fetch stock suggestions when the user presses "Enter"
     const handleKeyPress = async (e) => {
         if (e.key === 'Enter') {
             if (!searchTerm) return;
@@ -26,35 +43,69 @@ function Home() {
         }
     };
 
-    // Fetch stock data when a symbol is selected
+    // Fetch stock details, price, and company-specific news when a symbol is selected
     const handleSearch = async (symbol) => {
         if (!symbol) return;
         try {
-            const response = await axios.get(`http://localhost:3001/api/stocks/stock-info/${symbol}`);
-            setStockData(response.data);
+            // Fetch stock details
+            const stockResponse = await axios.get(`http://localhost:3001/api/stocks/stock-info/${symbol}`);
+            setStockData(stockResponse.data);
+
+            // Fetch stock price
+            const priceResponse = await axios.get(`http://localhost:3001/api/stocks/stock-price/${symbol}`);
+            setStockPrice(priceResponse.data);
+
+            // Fetch related company news
+            const newsResponse = await axios.get(`http://localhost:3001/api/news/company-news/${symbol}`);
+            const randomNews = newsResponse.data.sort(() => 0.5 - Math.random()).slice(0, 3); // Select 3 random articles
+            setNewsArticles(randomNews);
+
             setSearchError(null);
             setSuggestions([]); // Clear suggestions after selection
             setSearchTerm(''); // Clear search input after selection
+
+            // Start live price updates
+            startLiveUpdates(symbol);
         } catch (err) {
-            setSearchError('Failed to fetch stock information. Please try again.');
+            setSearchError('Failed to fetch stock information or company news. Please try again.');
             setStockData(null);
+            setStockPrice(null); // Clear stock price on error
+            setNewsArticles([]); // Clear news articles on error
         }
     };
 
-    // Fetch general market news on component mount
-    useEffect(() => {
-        const fetchMarketNews = async () => {
-            try {
-                const response = await axios.get('http://localhost:3001/api/news/market-news');
-                setNewsArticles(response.data.slice(0, 3)); // Ensure only 3 articles are used
-                setNewsError(null);
-            } catch (err) {
-                console.error('Error fetching market news:', err.message);
-                setNewsError('Failed to fetch market news. Please try again later.');
-            }
-        };
+    // Function to start live stock price updates
+    const startLiveUpdates = (symbol) => {
+        // Clear any existing intervals to avoid duplicate calls
+        stopLiveUpdates();
 
-        fetchMarketNews();
+        const interval = setInterval(async () => {
+            try {
+                const priceResponse = await axios.get(`http://localhost:3001/api/stocks/stock-price/${symbol}`);
+                setStockPrice(priceResponse.data); // Update stock price in state
+            } catch (err) {
+                console.error('Error fetching live stock price:', err.message);
+            }
+        }, 5000); // Fetch stock price every 5 seconds
+
+        // Store interval ID in state for cleanup
+        setLiveUpdateInterval(interval);
+    };
+
+    // Cleanup function to stop live updates
+    const stopLiveUpdates = () => {
+        if (liveUpdateInterval) {
+            clearInterval(liveUpdateInterval);
+            setLiveUpdateInterval(null);
+        }
+    };
+
+    // Store the interval ID to clear it when component unmounts or symbol changes
+    const [liveUpdateInterval, setLiveUpdateInterval] = useState(null);
+
+    // Cleanup interval on component unmount
+    useEffect(() => {
+        return () => stopLiveUpdates(); // Clear interval when component unmounts
     }, []);
 
     return (
@@ -100,11 +151,23 @@ function Home() {
                             ))}
                         </ul>
                     )}
-                    {stockData && (
-                        <>
-                            <div className="home-stock-name">{stockData.profile.ticker}</div>
+                    {stockData && stockPrice && (
+                        <div>
+                            <div className="home-stock-name">
+                                {stockData.profile.ticker}
+                                <span
+                                    className={`stock-price ${
+                                        stockPrice.d > 0 ? 'positive' : 'negative'
+                                    }`}
+                                >
+                                    ${stockPrice.c} ({stockPrice.d > 0 ? '+' : ''}{stockPrice.dp}%)
+                                </span>
+                            </div>
                             <div className="home-row-content">
-                                <h3>{stockData.profile.name}</h3>
+                                <p>High Price (Day): ${stockPrice.h}</p>
+                                <p>Low Price (Day): ${stockPrice.l}</p>
+                                <p>Open Price: ${stockPrice.o}</p>
+                                <p>Previous Close: ${stockPrice.pc}</p>
                                 <p>Market Capitalization: ${stockData.profile.marketCapitalization}</p>
                                 <p>Industry: {stockData.profile.finnhubIndustry}</p>
                                 <p>10-Day Average Volume: {stockData.financials['10DayAverageTradingVolume']}</p>
@@ -114,7 +177,7 @@ function Home() {
                                 <p>52-Week Return: {stockData.financials['52WeekPriceReturnDaily']}%</p>
                                 <p>Beta: {stockData.financials['beta']}</p>
                             </div>
-                        </>
+                        </div>
                     )}
                     {searchError && <p className="error">{searchError}</p>}
                 </div>

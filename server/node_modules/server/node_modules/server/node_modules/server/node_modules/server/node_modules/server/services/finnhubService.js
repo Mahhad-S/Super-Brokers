@@ -142,29 +142,26 @@ const getRandomArticles = (articles, numberOfArticles) => {
     return shuffled.slice(0, numberOfArticles); // Get the first `numberOfArticles` elements
 };
 
+// Look up news for company dictated by ticker query
 const getCompanyNews = async (symbol) => {
     try {
-        // Get todays date and the date 3 months ago
-        const toDate = new Date();
         const fromDate = new Date();
-        fromDate.setMonth(fromDate.getMonth() - 3);
-  
-        // Format dates as YYYY-MM-DD
-        const formattedFromDate = fromDate.toISOString().split('T')[0];
-        const formattedToDate = toDate.toISOString().split('T')[0];
-  
-        // Make API call
+        fromDate.setMonth(fromDate.getMonth() - 3); // 3 months ago
+        const toDate = new Date();
+
         const response = await axios.get(`${FINNHUB_API_URL}/company-news`, {
             params: {
-            symbol: symbol,
-            from: formattedFromDate,
-            to: formattedToDate,
-            token: API_KEY,
+                symbol,
+                from: fromDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
+                to: toDate.toISOString().split('T')[0],     // Format as YYYY-MM-DD
+                token: API_KEY,
             },
         });
+
+        console.log('Finnhub Company News Response:', response.data); // Log the response
         return response.data;
     } catch (error) {
-        console.error(`Error fetching company news for ${symbol}: `, error);
+        console.error(`Error fetching company news for ${symbol}:`, error.message);
         throw error;
     }
 };
