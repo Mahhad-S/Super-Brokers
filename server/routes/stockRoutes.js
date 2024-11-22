@@ -1,15 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const { getCompanyProfile, getStockPrice, getBasicFinancials, getStockSymbols, getSymbolLookup } = require('../services/finnhubService');
+const { getCompanyProfile, getStockPrice, getBasicFinancials, getStockSymbols, getSymbolLookup, } = require('../services/finnhubService');
+const { getAlphaVantageCandlestickData } = require('../services/alphaVantageService');
 
-// Endpoint to get company profile by stock symbol
-router.get('/company-profile/:symbol', async (req, res) => {
+// Endpoint to get company profile & basic financials by stock symbol
+router.get('/stock-info/:symbol', async (req, res) => {
   const { symbol } = req.params;
   try {
-    const profile = await getCompanyProfile(symbol);
-    res.json(profile);
+      const profile = await getCompanyProfile(symbol);
+      const financials = await getBasicFinancials(symbol);
+      res.json({ profile, financials });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to retrieve company profile' });
+      res.status(500).json({ error: 'Failed to retrieve stock information' });
   }
 });
 
@@ -24,29 +26,33 @@ router.get('/stock-price/:symbol', async (req, res) => {
   }
 });
 
-// Endpoint to get basic financials for a company
-router.get('/basic-financials/:symbol', async (req, res) => {
-    const { symbol } = req.params;
-    try {
-        const financials = await getBasicFinancials(symbol);
-        res.json(financials);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to retrieve basic financials' });
-    }
-});
+// Symbol Lookup with US Stock Filter
+router.get('/symbol-lookup/:query', async (req, res) => {
+  const { query } = req.params;
+  try {
+      // Fetch results from Finnhub
+      const lookupResults = await getSymbolLookup(query);
 
-// Endpoint to lookup symbols based on query
-router.get('/lookup', async (req, res) => {
-    const { query } = req.query;
-    if (!query) {
-        return res.status(400).json({ error: 'Query parameter is required' });
-    }
-    try {
-        const results = await getSymbolLookup(query);
-        res.json(results);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to perform symbol lookup' });
-    }
+      // Filter results to include matches in description or displaySymbol
+      const filteredResults = lookupResults.result.filter(item =>
+          item.description.toLowerCase().includes(query.toLowerCase()) || // Match company name
+          item.displaySymbol.toLowerCase().includes(query.toLowerCase())  // Match ticker symbol
+      );
+
+      // Prioritize US stocks (NASDAQ and NYSE)
+      const prioritizedResults = filteredResults.sort((a, b) => {
+          const isUSStockA = a.mic === 'XNAS' || a.mic === 'XNYS';
+          const isUSStockB = b.mic === 'XNAS' || b.mic === 'XNYS';
+          if (isUSStockA && !isUSStockB) return -1; // US stocks first
+          if (!isUSStockA && isUSStockB) return 1;
+          return 0; // Preserve relative order otherwise
+      });
+
+      res.json({ result: prioritizedResults });
+  } catch (error) {
+      console.error('Error in symbol lookup:', error);
+      res.status(500).json({ error: 'Failed to perform symbol lookup' });
+  }
 });
 
 // Endpoint to get stock symbols for the US exchange
@@ -57,6 +63,17 @@ router.get('/symbols', async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: 'Failed to retrieve stock symbols' });
     }
+});
+
+router.get('/candlestick/:symbol', async (req, res) => {
+  const { symbol } = req.params;
+  try {
+      const data = await getAlphaVantageCandlestickData(symbol);
+      res.json(data);
+  } catch (error) {
+      console.error('Error fetching candlestick data:', error.message);
+      res.status(500).json({ error: 'Failed to retrieve candlestick data' });
+  }
 });
 
 module.exports = router;

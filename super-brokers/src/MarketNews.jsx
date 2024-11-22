@@ -11,12 +11,16 @@ function MarketNews() {
       try {
         console.log('Fetching market news...');
         const response = await axios.get('http://localhost:3001/api/news/market-news');
-        console.log('Response data:', response.data);
-        setNews(response.data);
-        setLoading(false);
+        console.log('Market news response:', response.data);
+        if (response.data && Array.isArray(response.data)) {
+          setNews(response.data);  // Set the news articles in state
+        } else {
+          setError('Unexpected data format from API');
+        }
       } catch (err) {
         console.error('Error fetching market news:', err);
         setError('Failed to fetch market news');
+      } finally {
         setLoading(false);
       }
     };
@@ -39,11 +43,10 @@ function MarketNews() {
         <div>
           {news.map((item, index) => (
             <div key={index}>
-              {/* Display headline and summary in plain text */}
-              <p>{`Headline: ${item.headline}`}</p>
-              <p>{`Summary: ${item.summary}`}</p>
-              <p>{`URL: ${item.url}`}</p>
-              <br />
+              <h3>{item.headline}</h3>
+              <p>{item.summary}</p>
+              <a href={item.url} target="_blank" rel="noopener noreferrer">Read more</a>
+              <hr />
             </div>
           ))}
         </div>

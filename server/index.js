@@ -16,7 +16,8 @@ connectDB();
 
 app.use(express.json())
 app.use(cors({
-    origin: "http://localhost:5173"
+    origin: 'http://localhost:5173',  // Allow only this origin
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE'
 }));
 
 app.post("/login", (req, res) => {
