@@ -1,9 +1,14 @@
 import React from 'react';
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from 'react-router-dom';
 import "./style/About.css";
 
 function About() {
+    const [showDropdown, setShowDropdown] = useState(false);
+    const toggleDropdown = () => {
+        setShowDropdown(!showDropdown);
+    }; 
+    
     return (
         <div className="about-main-wrapper">
             {/* Top Navigation Bar */}
@@ -13,10 +18,30 @@ function About() {
                 </div>
                 {/* Navigation Links */}
                 <div className="about-nav-links">
-                    <Link to="/Dashboard" className="about-tab-link">Dashboard</Link>
-                    <Link to="/About" className="about-tab-link">About</Link>
-                    <Link to="/Help" className="about-tab-link">Help</Link>
+                    <NavLink to="/Dashboard" className={({ isActive }) => isActive ? "about-tab-link active" : "about-tab-link"}>
+                        Dashboard
+                    </NavLink>
+                    <NavLink to="/About" className={({ isActive }) => isActive ? "about-tab-link active" : "about-tab-link"}>
+                        About
+                    </NavLink>
+                    <NavLink to="/Help" className={({ isActive }) => isActive ? "about-tab-link active" : "about-tab-link"}>
+                        Help
+                    </NavLink>
+                    <NavLink to="/Portfolio" className={({ isActive }) => isActive ? "about-tab-link active" : "about-tab-link"}>
+                        Portfolio
+                    </NavLink>
                 </div>
+                <button className="dashboard-user" onClick={toggleDropdown}>
+                    <img src="/images/SB-logo.png" alt="User Icon" />
+                </button>
+                {showDropdown && (
+                    <div className="about-dropdown-menu">
+                        <NavLink to="/" className="about-dropdown-item">Home</NavLink>
+                        <NavLink to="/login" className="about-dropdown-item">Login</NavLink>
+                        <NavLink to="/register" className="about-dropdown-item">Sign Up</NavLink>
+                        <NavLink to="" className="about-dropdown-item">Log Out</NavLink>
+                    </div>
+                )}
             </div>
 
             {/* Main content area with blurred background */}

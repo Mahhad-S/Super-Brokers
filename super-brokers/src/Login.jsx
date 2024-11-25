@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from 'react-router-dom';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import icons for visibility toggle
@@ -39,9 +39,10 @@ function Login() {
                     </button>
                     {showDropdown && (
                         <div className="login-dropdown-menu">
-                            <Link to="/" className="login-dropdown-item">Home</Link>
-                            <Link to="/login" className="login-dropdown-item">Login</Link>
-                            <Link to="/register" className="login-dropdown-item">Sign Up</Link>
+                            <NavLink to="/" className="login-dropdown-item">Home</NavLink>
+                            <NavLink to="/login" className="login-dropdown-item">Login</NavLink>
+                            <NavLink to="/register" className="login-dropdown-item">Sign Up</NavLink>
+                            <NavLink to="" className="dashboard-dropdown-item">Log Out</NavLink>
                         </div>
                     )}
                 </div>
@@ -89,7 +90,7 @@ function Login() {
                             </div>
                             <button type="submit" className="login-submit-button">Log In</button>
                         </form>
-                        <p>Don't have an account?<Link to="/register" className="login-text-primary"> Sign up</Link></p>
+                        <p>Don't have an account?<NavLink to="/register" className="login-text-primary"> Sign up</NavLink></p>
                     </div>
                 </div>
             </div>

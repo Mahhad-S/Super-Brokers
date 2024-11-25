@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from 'react-router-dom';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import './style/Signup.css';  // Import the new CSS file for Signup styling
@@ -41,9 +41,10 @@ function Signup() {
                     </button>
                     {showDropdown && (
                         <div className="signup-dropdown-menu">
-                            <Link to="/" className="signup-dropdown-item">Home</Link>
-                            <Link to="/login" className="signup-dropdown-item">Login</Link>
-                            <Link to="/register" className="signup-dropdown-item">Sign Up</Link>
+                            <NavLink to="/" className="signup-dropdown-item">Home</NavLink>
+                            <NavLink to="/login" className="signup-dropdown-item">Login</NavLink>
+                            <NavLink to="/register" className="signup-dropdown-item">Sign Up</NavLink>
+                            <NavLink to="" className="dashboard-dropdown-item">Log Out</NavLink>
                         </div>
                     )}
                 </div>
@@ -95,7 +96,7 @@ function Signup() {
                             </div>
                             <button type="submit" className="signup-submit-button">Register</button>
                         </form>
-                        <p>Already have an account? <Link to="/login" className="signup-text-primary">Login</Link></p>
+                        <p>Already have an account? <NavLink to="/login" className="signup-text-primary">Login</NavLink></p>
                     </div>
                 </div>
             </div>

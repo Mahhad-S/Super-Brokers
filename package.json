@@ -42,7 +42,7 @@
   },
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "cd server && nodemon index.js",
+    "server": "cd server && npm run build && nodemon index.js",
     "client": "cd super-brokers && npm run dev"
   }
 }
