@@ -31,8 +31,8 @@ function About() {
                         Portfolio
                     </NavLink>
                 </div>
-                <button className="dashboard-user" onClick={toggleDropdown}>
-                    <img src="/images/SB-logo.png" alt="User Icon" />
+                <button className="about-user" onClick={toggleDropdown}>
+                    <img src="/images/user-icon.png" className="about-user-icon" alt="User Icon" />
                 </button>
                 {showDropdown && (
                     <div className="about-dropdown-menu">

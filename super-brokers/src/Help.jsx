@@ -57,7 +57,7 @@ function Help() {
                     </NavLink>
                 </div>
                 <button className="help-user" onClick={toggleDropdown}>
-                    <img src="/images/SB-logo.png" alt="User Icon" />
+                    <img src="/images/user-icon.png" className="help-user-icon" alt="User Icon" />
                 </button>
                 {showDropdown && (
                     <div className="help-dropdown-menu">

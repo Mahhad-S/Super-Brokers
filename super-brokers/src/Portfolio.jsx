@@ -39,7 +39,7 @@ function Portfolio() {
                     </NavLink>
                 </div>
                 <button className="porta-user" onClick={toggleDropdown}>
-                    <img src="/images/SB-logo.png" alt="User Icon" />
+                    <img src="/images/user-icon.png" className="porta-user-icon" alt="User Icon" />
                 </button>
                 {showDropdown && (
                     <div className="porta-dropdown-menu">
