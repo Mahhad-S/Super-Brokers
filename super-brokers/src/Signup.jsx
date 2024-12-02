@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from 'react-router-dom';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import './style/Signup.css';  // Import the new CSS file for Signup styling
 
 function Signup() {
-    const [name, setName] = useState('');
+    const [username, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
@@ -17,12 +17,19 @@ function Signup() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.post('http://localhost:3001/register', { name, email, password })
-            .then(result => {
-                console.log(result);
-                navigate('/login');
-            })
-            .catch(err => console.log(err));
+        axios.post('http://localhost:3001/register', { username, email, password })
+          .then(result => {
+            console.log(result);
+            if (result.status === 201) {
+              navigate("/login");
+            } else {
+              alert(result.data.message); // Show error message
+            }
+          })
+          .catch(err => {
+            console.log(err);
+            alert(err.response?.data?.message || 'An error occurred'); // Show error message
+          });
     };
 
     return (
@@ -34,9 +41,10 @@ function Signup() {
                     </button>
                     {showDropdown && (
                         <div className="signup-dropdown-menu">
-                            <Link to="/" className="signup-dropdown-item">Home</Link>
-                            <Link to="/login" className="signup-dropdown-item">Login</Link>
-                            <Link to="/register" className="signup-dropdown-item">Sign Up</Link>
+                            <NavLink to="/" className="signup-dropdown-item">Home</NavLink>
+                            <NavLink to="/login" className="signup-dropdown-item">Login</NavLink>
+                            <NavLink to="/register" className="signup-dropdown-item">Sign Up</NavLink>
+                            <NavLink to="" className="dashboard-dropdown-item">Log Out</NavLink>
                         </div>
                     )}
                 </div>
@@ -55,12 +63,12 @@ function Signup() {
                         <h2>Sign Up</h2>
                         <form onSubmit={handleSubmit}>
                             <div className="signup-username">
-                                <label htmlFor="name" className="signup-form-label">Name</label>
+                                <label htmlFor="username" className="signup-form-label">Name</label>
                                 <input 
                                     type="text"
                                     placeholder="Enter Name"
                                     autoComplete="off"
-                                    name="name"
+                                    name="username"
                                     className="form-control signup-input-rounded"
                                     onChange={(e) => setName(e.target.value)}
                                 />
@@ -88,7 +96,7 @@ function Signup() {
                             </div>
                             <button type="submit" className="signup-submit-button">Register</button>
                         </form>
-                        <p>Already have an account? <Link to="/login" className="signup-text-primary">Login</Link></p>
+                        <p>Already have an account? <NavLink to="/login" className="signup-text-primary">Login</NavLink></p>
                     </div>
                 </div>
             </div>

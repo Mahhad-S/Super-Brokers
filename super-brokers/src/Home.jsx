@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './style/Home.css';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import CandlestickChart from './CandlestickChart';
 
 function Home() {
@@ -130,88 +130,102 @@ function Home() {
         return () => stopLiveUpdates(); // Clear interval when component unmounts
     }, []);
 
+    // Dropdown
+    const [showDropdown, setShowDropdown] = useState(false);
+    const toggleDropdown = () => {
+        setShowDropdown(!showDropdown);
+    };
+
     return (
         <div className="home-main-wrapper">
             <div className="home-hot-bar">
-                <div className="home-row">
-                    <div className="home-logo-img">
-                        <img src="/images/Sb-logo.png" alt="Logo" />
-                    </div>
-                    <div className="home-nav-col">
-                        <Link to="/Dashboard" className="home-tab-link">DASHBOARD</Link>
-                    </div>
-                    <div className="home-nav-col">
-                        <Link to="/About" className="home-tab-link">ABOUT</Link>
-                    </div>
-                    <div className="home-nav-col">
-                        <Link to="/Help" className="home-tab-link">HELP</Link>
-                    </div>
+                <div className="home-logo-img">
+                    <img src="/images/Sb-logo.png" alt="Logo" />
                 </div>
+                {/* Navigation Links */}
+                <div className="home-nav-links">
+                    <NavLink to="/Dashboard" className={({ isActive }) => isActive ? "home-tab-link active" : "home-tab-link"}>
+                        Dashboard
+                    </NavLink>
+                    <NavLink to="/About" className={({ isActive }) => isActive ? "home-tab-link active" : "home-tab-link"}>
+                        About
+                    </NavLink>
+                    <NavLink to="/Help" className={({ isActive }) => isActive ? "home-tab-link active" : "home-tab-link"}>
+                        Help
+                    </NavLink>
+                </div>
+                <button className="home-user" onClick={toggleDropdown}>
+                    <img src="/images/user-icon.png" className="home-user-icon" alt="User Icon" />
+                </button>
+                {showDropdown && (
+                    <div className="home-dropdown-menu">
+                        <NavLink to="/" className="home-dropdown-item">Home</NavLink>
+                        <NavLink to="/login" className="home-dropdown-item">Login</NavLink>
+                        <NavLink to="/register" className="home-dropdown-item">Sign Up</NavLink>
+                        <NavLink to="" className="home-dropdown-item">Log Out</NavLink>
+                    </div>
+                )}
             </div>
 
-            <div className="home-main-content">
-                <div className="home-content-left">
-                    <div className="home-search-bar">
-                        <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Search for a stock..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            onKeyDown={handleKeyPress} // Trigger on "Enter" key press
-                        />
-                    </div>
-                    {suggestions.length > 0 && (
-                        <ul className="dropdown">
-                            {suggestions.map((item, index) => (
-                                <li
-                                    key={index}
-                                    onClick={() => handleSearch(item.symbol)}
-                                >
-                                    <strong>{item.displaySymbol}</strong> - {item.description}
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                    {stockData && stockPrice && (
-                        <div>
-                            <div className="home-stock-name">
-                                {stockData.profile.ticker}
-                                <span
-                                    className={`stock-price ${
-                                        stockPrice.d > 0 ? 'positive' : 'negative'
-                                    }`}
-                                >
-                                    ${stockPrice.c} ({stockPrice.d > 0 ? '+' : ''}{stockPrice.dp}%)
-                                </span>
-                            </div>
-                            {/* Candlestick Graph */}
-                            <div className="home-row-content">
-                                {candlestickData && <CandlestickChart data={candlestickData} />}
-                            </div>
-                            {/* Stock Metrics */}
-                            <div className="home-row-content">
-                                <h2>{stockData.profile.name}</h2>
-                                <p>High Price (Day): ${stockPrice.h}</p>
-                                <p>Low Price (Day): ${stockPrice.l}</p>
-                                <p>Open Price: ${stockPrice.o}</p>
-                                <p>Previous Close: ${stockPrice.pc}</p>
-                                <p>Market Capitalization: ${stockData.profile.marketCapitalization}</p>
-                                <p>Industry: {stockData.profile.finnhubIndustry}</p>
-                                <p>10-Day Average Volume: {stockData.financials['10DayAverageTradingVolume']}</p>
-                                <p>52-Week High: ${stockData.financials['52WeekHigh']}</p>
-                                <p>52-Week Low: ${stockData.financials['52WeekLow']}</p>
-                                <p>52-Week Low Date: {stockData.financials['52WeekLowDate']}</p>
-                                <p>52-Week Return: {stockData.financials['52WeekPriceReturnDaily']}%</p>
-                                <p>Beta: {stockData.financials['beta']}</p>
-                            </div>
+            <div className="home-body-content">
+                <section className="home-main-content">
+                    <section className="home-main-left">
+                        <div className="home-content-left">
+                            <input
+                                type="text"
+                                className="home-search-bar"
+                                placeholder="Search for a stock..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                onKeyDown={handleKeyPress} // Trigger on "Enter" key press
+                            />
+                            {suggestions.length > 0 && (
+                                <ul className="dropdown">
+                                    {suggestions.map((item, index) => (
+                                        <li key={index} onClick={() => handleSearch(item.symbol)}>
+                                            <strong>{item.displaySymbol}</strong> - {item.description}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                            {stockData && stockPrice && (
+                                <div>
+                                    <div className="home-stock-name">
+                                        {stockData.profile.ticker}
+                                        <span
+                                            className={`stock-price ${
+                                                stockPrice.d > 0 ? 'positive' : 'negative'
+                                            }`}
+                                        >
+                                            ${stockPrice.c} ({stockPrice.d > 0 ? '+' : ''}{stockPrice.dp}%)
+                                        </span>
+                                    </div>
+
+                                    <div className="home-row-content">
+                                        {candlestickData && <CandlestickChart data={candlestickData} />}
+                                    </div>
+
+                                    <div className="home-row-content">
+                                        <p>High Price (Day): ${stockPrice.h}</p>
+                                        <p>Low Price (Day): ${stockPrice.l}</p>
+                                        <p>Open Price: ${stockPrice.o}</p>
+                                        <p>Previous Close: ${stockPrice.pc}</p>
+                                        <p>Market Capitalization: ${stockData.profile.marketCapitalization}</p>
+                                        <p>Industry: {stockData.profile.finnhubIndustry}</p>
+                                        <p>10-Day Average Volume: {stockData.financials['10DayAverageTradingVolume']}</p>
+                                        <p>52-Week High: ${stockData.financials['52WeekHigh']}</p>
+                                        <p>52-Week Low: ${stockData.financials['52WeekLow']}</p>
+                                        <p>52-Week Low Date: {stockData.financials['52WeekLowDate']}</p>
+                                        <p>52-Week Return: {stockData.financials['52WeekPriceReturnDaily']}%</p>
+                                        <p>Beta: {stockData.financials['beta']}</p>
+                                    </div>
+                                </div>
+                            )}
+                        {searchError && <p className="error">{searchError}</p>}
                         </div>
-                    )}
-                    {searchError && <p className="error">{searchError}</p>}
-                </div>
-                <div className="home-content-right">
-                    {/* Bubble 1 */}
-                    <div className="home-bubble">
+                    </section>
+                    <section className="home-main-right">
+                        <div className="home-news-bubble">
                         {newsArticles[0] ? (
                             <div>
                                 <h3>
@@ -224,9 +238,8 @@ function Home() {
                         ) : (
                             <p>Loading...</p>
                         )}
-                    </div>
-                    {/* Bubble 2 */}
-                    <div className="home-bubble">
+                        </div>
+                        <div className="home-news-bubble">
                         {newsArticles[1] ? (
                             <div>
                                 <h3>
@@ -239,9 +252,8 @@ function Home() {
                         ) : (
                             <p>Loading...</p>
                         )}
-                    </div>
-                    {/* Bubble 3 */}
-                    <div className="home-bubble">
+                        </div>
+                        <div className="home-news-bubble">
                         {newsArticles[2] ? (
                             <div>
                                 <h3>
@@ -254,8 +266,9 @@ function Home() {
                         ) : (
                             <p>Loading...</p>
                         )}
-                    </div>
-                </div>
+                        </div>
+                    </section>
+                </section>
             </div>
             {newsError && <p className="error">{newsError}</p>}
         </div>

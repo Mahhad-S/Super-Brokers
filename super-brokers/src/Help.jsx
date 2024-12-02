@@ -1,11 +1,10 @@
 import React from 'react';
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from 'react-router-dom';
 import "./style/Help.css";
 
 function Help() {
     const [openItems, setOpenItems] = useState({});
-
     const helpItems = [
         {
             title: "Getting Started Guide",
@@ -24,44 +23,62 @@ function Help() {
             content: "Learn how to manage your account settings, update your profile information, and customize your preferences for a better experience."
         }
     ];
-
     const toggleItem = (index) => {
         setOpenItems(prev => ({
             ...prev,
             [index]: !prev[index]
         }));
     };
+    const [showDropdown, setShowDropdown] = useState(false);
+    const toggleDropdown = () => {
+        setShowDropdown(!showDropdown);
+    }; 
 
     return (
         <div className="help-main-wrapper">
+            {/* Top Navigation Bar */}
             <div className="help-hot-bar">
-                <div className="dashboard-row">
-                    {/* Logo on the left */}
-                    <div className="dashboard-logo-img">
-                        <img src="/images/Sb-logo.png" alt="Logo"/>
-                    </div>
-                    {/* Tabs as Buttons */}
-                    <div className="dashboard-nav-col">
-                        <Link to="/Dashboard" className="dashboard-tab-link" >DASHBOARD</Link>
-                    </div>
-                    <div className="dashboard-nav-col">
-                        <Link to="/About" className="dashboard-tab-link" >ABOUT</Link>
-                    </div>
-                    <div className="dashboard-nav-col">
-                        <Link to="/Help" className="dashboard-tab-link" >HELP</Link>
-                    </div>
+                <div className="help-logo-img">
+                    <img src="/images/Sb-logo.png" alt="Logo" />
                 </div>
+                {/* Navigation Links */}
+                <div className="help-nav-links">
+                    <NavLink to="/Dashboard" className={({ isActive }) => isActive ? "help-tab-link active" : "help-tab-link"}>
+                        Dashboard
+                    </NavLink>
+                    <NavLink to="/About" className={({ isActive }) => isActive ? "help-tab-link active" : "help-tab-link"}>
+                        About
+                    </NavLink>
+                    <NavLink to="/Help" className={({ isActive }) => isActive ? "help-tab-link active" : "help-tab-link"}>
+                        Help
+                    </NavLink>
+                    <NavLink to="/Portfolio" className={({ isActive }) => isActive ? "help-tab-link active" : "help-tab-link"}>
+                        Portfolio
+                    </NavLink>
+                </div>
+                <button className="help-user" onClick={toggleDropdown}>
+                    <img src="/images/user-icon.png" className="help-user-icon" alt="User Icon" />
+                </button>
+                {showDropdown && (
+                    <div className="help-dropdown-menu">
+                        <NavLink to="/" className="help-dropdown-item">Home</NavLink>
+                        <NavLink to="/login" className="help-dropdown-item">Login</NavLink>
+                        <NavLink to="/register" className="help-dropdown-item">Sign Up</NavLink>
+                        <NavLink to="" className="help-dropdown-item">Log Out</NavLink>
+                    </div>
+                )}
             </div>
+
             <div className="help-main-content">
                 <div className="help-items">
                     {helpItems.map((item, index) => (
                         <div key={index} className="items-wrapper">
-                            <button onClick={() => toggleItem(index)} className="items-content">
+                            <button onClick={() => toggleItem(index)} className="help-items-content">
                                 <span >{item.title}</span>
                                 <span>{openItems[index] ? '−' : '+'}</span>
                             </button>
                             {openItems[index] && (
-                                <div className="items-expand">
+                                <div className="help-items-expand">
                                     {item.content}
                                 </div>
                             )}

@@ -1,58 +1,113 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    height: 100%;
+    width: 100%;
+    font-family: Arial, sans-serif;
+}
+
 .help-main-wrapper {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    min-width: 200vh;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    height: 100vh;
+    width: 100vw;
     background-color: #6c757d;
-    position: relative;
-    flex-wrap: wrap;
 }
 
 /* Hot Bar */
 .help-hot-bar {
-    width: 100%;
-    background-color: #c454b1;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    background-color: #7ba826;
+    padding: 0;
+    align-items: end;
 }
 
-.help-row {
-    display: flex;
-    align-items: center;
-    margin: 0;
-    gap: 20px;
-}
-
-.help-logo-img, img {
+.help-hot-bar img {
     width: 100px;
     height: 100px;
     border: 0;
-    z-index: 2;
 }
 
-.help-nav-col {
-    display: inline-block;
-    width: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.help-nav-links {
+    display: grid;
+    grid-auto-flow: column;
+    justify-content: start;
 }
 
-/* Tab Links */
 .help-tab-link {
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
+    text-decoration: none;
+    color: #333;
+    padding: 15px 20px;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
     background-color: #f8f9fa;
     border: 1px solid #ddd;
     border-bottom: none;
-    padding: 7px 20px;
     font-size: 16px;
-    height: 40px;
-    margin-top: 60px;
-    z-index: 1;
-    cursor: pointer;
-    outline: none;
-    text-decoration: none;
-    color: inherit;
+    margin: 0;
+    height: 100%;
+    box-sizing: border-box;
+    width: 150px;
     text-align: center;
+    display: inline-block;
+}
+
+/* Add spacing between tabs */
+.help-tab-link + .help-tab-link {
+    margin-left: -1px; /* Avoid double borders */
+}
+
+/* Active tab style */
+.help-tab-link.active {
+    background-color: #d3d3d3; /* Gray color for active tab */
+    font-weight: bold;
+    color: #000;
+    border-bottom: 1px solid #d3d3d3; /* Match background for seamless transition */
+}
+
+.help-user {
+    grid-column: 3 / 4;
+    justify-self: end;
+    border: none;
+    background: none;
+    padding: 0;
+    outline: none;
+}
+
+.help-user-icon {
+    border-radius: 50%;
+    padding: 20px;
+}
+
+.help-dropdown-menu {
+    position: absolute;
+    top: 90px; /* Adjust based on your navbar height */
+    right: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    width: 150px;
+    z-index: 1;
+}
+
+.help-dropdown-item {
+    padding: 10px 15px;
+    color: #333;
+    text-decoration: none;
+    text-align: center;
+    transition: background-color 0.2s ease;
+}
+
+.help-dropdown-item:hover {
+    background-color: #f1f1f1;
 }
 
 .help-main-content {
@@ -73,13 +128,13 @@
     margin: 0 auto;
 }
 
-.items-wrapper {
+.help-items-wrapper {
     background-color: #f8f9fa;
     border-radius: 8px;;
     overflow: hidden;
 }
 
-.items-content {
+.help-items-content {
     background-color: #f8f9fa;
     cursor: pointer;
     display: flex;
@@ -91,11 +146,11 @@
     padding: 1.5rem;
 }
 
-.items-wrapper span {
+.help-items-wrapper span {
     font-weight: 500;
 }
 
-.items-wrapper .items-expand {
+.help-items-wrapper .items-expand {
     padding: 1.5rem;
     background-color: #f8f9fa;
     border-top: 1px solid #dee2e6;
