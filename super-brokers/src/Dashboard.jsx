@@ -19,6 +19,12 @@ function Dashboard() {
     const { logout } = useContext(AuthContext);
     const searchRef = useRef(null);
 
+    const [mode, setMode] = useState("Buy"); // Active mode: Buy or Sell
+    const [sellAmount, setSellAmount] = useState(""); // Sell shares input
+    const currentPrice = 50; // Example: Replace with Finnhub API data
+    const sharesHeld = 100; // Example: Replace with Finnhub API data
+    const totalSale = sellAmount ? (sellAmount * currentPrice).toFixed(2) : "0.00"; // Calculate total sale for Sell Mode
+
     // Fetch general market news on component mount
     useEffect(() => {
         const fetchMarketNews = async () => {
@@ -273,17 +279,60 @@ function Dashboard() {
                         </section>
                         
                         <section className="dashboard-sub-right">
-                            <div className="dashboard-buy-sell-panel">
-                                <div className="tab-button active">Buy</div>
-                                <div className="tab-button">Sell</div>
+                        <div className="dashboard-buy-sell-panel">
+                            <div>
+                                {/* Toggle Buttons */}
+                                <button
+                                className={`tab-button ${mode === "Buy" ? "active" : ""}`}
+                                onClick={() => setMode("Buy")}
+                                >
+                                Buy
+                                </button>
+                                <button
+                                className={`tab-button ${mode === "Sell" ? "active" : ""}`}
+                                onClick={() => setMode("Sell")}
+                                >
+                                Sell
+                                </button>
+                            </div>
+
+                            {/* Sell Mode Panel */}
+                            {mode === "Sell" && (
                                 <div>
-                                    <p>Curr. Price/Share: $x.xx</p>
-                                    <p>Buying Power (User): $x.xx</p>
-                                    <input type="number" placeholder="Buy Amount (Shares)" style={{ width: "100%", fontSize: "0.8rem" }} />
-                                    <p>Avg. Cost Per Share: $x.xx</p>
-                                    <p>Total Cost: $x.xx</p>
-                                    <button className="dashboard-purchase-button">Purchase</button>
+                                <p>Curr. Price/Share: ${currentPrice}</p>
+                                <p>Shares Held: {sharesHeld} Shares</p>
+                                <label>
+                                    Sell Amount (Shares):
+                                    <input
+                                    type="number"
+                                    value={sellAmount}
+                                    onChange={(e) => setSellAmount(e.target.value)}
+                                    className="home-search-bar" // Reusing your input styling
+                                    />
+                                </label>
+                                <p>Total Sale: ${totalSale}</p>
+                                <button className="dashboard-purchase-button">Sell</button>
                                 </div>
+                            )}
+
+                            {/* Buy Mode Panel Placeholder */}
+                            {mode === "Buy" && (
+                                <div>
+                                <p>Curr. Price/Share: ${currentPrice}</p>
+                                <p>Shares Held: {sharesHeld} Shares</p>
+                                <label>
+                                    Buy Amount (Shares):
+                                    <input
+                                    type="number"
+                                    value={sellAmount}
+                                    onChange={(e) => setSellAmount(e.target.value)}
+                                    className="home-search-bar" // Reusing your input styling
+                                    />
+                                </label>
+                                <p>Total Sale: ${totalSale}</p>
+                                <button className="dashboard-purchase-button">Sell</button>
+                                </div>
+                            )}
                             </div>
                         </section>
                     </section>
