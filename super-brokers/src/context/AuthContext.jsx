@@ -6,6 +6,7 @@ export const AuthContext = createContext();
 // Create the AuthProvider component
 export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userId, setUserId] = useState(null); // Add userId state
 
   const login = async (email, password) => {
     try {
@@ -20,8 +21,9 @@ export function AuthProvider({ children }) {
       const data = await response.json();
 
       if (response.status === 200) {
-        // Login successful, update authentication state
+        // Login successful, update authentication state and save userId
         setIsAuthenticated(true);
+        setUserId(data._id); // Save _id returned from backend
         return true;
       } else {
         // Handle errors from the server
@@ -35,10 +37,13 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const logout = () => setIsAuthenticated(false);
+  const logout = () => {
+    setIsAuthenticated(false);
+    setUserId(null); // Clear userId on logout
+  };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, userId, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

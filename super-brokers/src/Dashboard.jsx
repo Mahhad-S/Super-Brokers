@@ -16,6 +16,8 @@ function Dashboard() {
     const [newsError, setNewsError] = useState(null);
     const [candlestickData, setCandlestickData] = useState(null); // State for candlestick data
     const { logout } = useContext(AuthContext);
+    const [followedStocks, setFollowedStocks] = useState([]);
+    const { userId } = useContext(AuthContext);
 
     // Fetch general market news on component mount
     useEffect(() => {
@@ -51,6 +53,27 @@ function Dashboard() {
         fetchCandlestickData();
     }, [stockData]);
 
+    // Fetch followed stocks data for user
+    useEffect(() => {
+        const fetchFollowedStocks = async () => {
+            try {
+                if (!userId) {
+                    console.error("User ID not available");
+                    return;
+                }
+    
+                const response = await axios.get(`http://localhost:3001/api/follow/followed-stocks/${userId}`);
+                if (response.status === 200) {
+                    setFollowedStocks(response.data);
+                }
+            } catch (error) {
+                console.error("Error fetching followed stocks:", error);
+            }
+        };
+    
+        fetchFollowedStocks();
+    }, [userId]);
+
     // Fetch stock suggestions when the user presses "Enter"
     const handleKeyPress = async (e) => {
         if (e.key === 'Enter') {
@@ -70,19 +93,15 @@ function Dashboard() {
     const handleSearch = async (symbol) => {
         if (!symbol) return;
         try {
-            // Fetch stock details
             const stockResponse = await axios.get(`http://localhost:3001/api/stocks/stock-info/${symbol}`);
             setStockData(stockResponse.data);
     
-            // Fetch stock price
             const priceResponse = await axios.get(`http://localhost:3001/api/stocks/stock-price/${symbol}`);
             setStockPrice(priceResponse.data);
     
-            // Fetch candlestick data
             const candlestickResponse = await axios.get(`http://localhost:3001/api/stocks/candlestick/${symbol}`);
-            setCandlestickData(candlestickResponse.data); // Update candlestick data
+            setCandlestickData(candlestickResponse.data);
     
-            // Fetch related company news
             const newsResponse = await axios.get(`http://localhost:3001/api/news/company-news/${symbol}`);
             const randomNews = newsResponse.data.sort(() => 0.5 - Math.random()).slice(0, 3);
             setNewsArticles(randomNews);
@@ -91,13 +110,14 @@ function Dashboard() {
             setSuggestions([]);
             setSearchTerm('');
         } catch (err) {
+            console.error("Error fetching stock data:", err);
             setSearchError('Failed to fetch stock information or candlestick data. Please try again.');
             setStockData(null);
             setStockPrice(null);
             setCandlestickData(null);
             setNewsArticles([]);
         }
-    };
+    };    
 
     // Function to start live stock price updates
     const startLiveUpdates = (symbol) => {
@@ -179,7 +199,12 @@ function Dashboard() {
                     </div>
                     <h3>Following</h3>
                     <div className="dashboard-left-bubble">
-                        {/* Content for Following can go here */}
+                    {followedStocks.map((stock) => (
+                        <div key={stock.symbol} className="followed-stock-item">
+                        <span>{stock.symbol}</span>
+                        <span>${stock.price.toFixed(2)}</span>
+                        </div>
+                    ))}
                     </div>
                 </aside>
 
@@ -219,6 +244,31 @@ function Dashboard() {
                                             ${stockPrice.c} ({stockPrice.d > 0 ? '+' : ''}{stockPrice.dp}%)
                                         </span>
                                     </div>
+                                    <button
+                                        onClick={async () => {
+                                            try {
+                                                if (!userId) {
+                                                    console.error("User ID not available");
+                                                    alert("You need to log in to follow stocks.");
+                                                    return;
+                                                }
+
+                                                const response = await axios.post("http://localhost:3001/api/follow/follow", {
+                                                    _id: userId, // Pass userId as _id to match the backend's expected structure
+                                                    stockSymbol: stockData.profile.ticker,
+                                                });
+                                                alert("Stock added to followed list!");
+
+                                                // Refresh followed stocks
+                                                const followedStocksResponse = await axios.get(`http://localhost:3001/api/follow/followed-stocks/${userId}`);
+                                                setFollowedStocks(followedStocksResponse.data);
+                                            } catch (error) {
+                                                console.error("Error following stock:", error);
+                                            }
+                                        }}
+                                    >
+                                        Follow
+                                    </button>
 
                                     <div className="home-row-content">
                                         {candlestickData && <CandlestickChart data={candlestickData} />}
