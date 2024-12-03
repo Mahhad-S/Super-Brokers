@@ -31,28 +31,27 @@ router.post('/follow', async (req, res) => {
 });
 
 // Endpoint to unfollow a stock
-router.post('/unfollow', async (req, res) => {
-  const { _id, stockSymbol } = req.body; // Use _id instead of userId
+router.delete('/unfollow/:id', async (req, res) => {
+  const { id } = req.params;
+  const { symbol } = req.body;
 
   try {
-    const user = await User.findById(_id); // Use findById with _id
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ msg: 'Invalid user ID' });
+    }
+
+    const user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ msg: 'User not found' });
     }
 
-    // Check if the stock is actually followed
-    if (!user.followedStocks.includes(stockSymbol)) {
-      return res.status(400).json({ msg: 'Stock is not followed' });
-    }
-
-    // Remove the stock from followedStocks
-    user.followedStocks = user.followedStocks.filter(symbol => symbol !== stockSymbol);
+    user.followedStocks = user.followedStocks.filter((stock) => stock !== symbol);
     await user.save();
 
-    res.json({ msg: 'Stock unfollowed successfully', followedStocks: user.followedStocks });
+    res.status(200).json({ msg: 'Stock unfollowed successfully' });
   } catch (err) {
-    console.error(err);
-    res.status(500).send('Server error');
+    console.error('Error in unfollow endpoint:', err.message);
+    res.status(500).json({ msg: 'Server error' });
   }
 });
 

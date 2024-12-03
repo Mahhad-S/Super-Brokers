@@ -18,6 +18,7 @@ function Dashboard() {
     const { logout } = useContext(AuthContext);
     const [followedStocks, setFollowedStocks] = useState([]);
     const { userId } = useContext(AuthContext);
+    const isFollowed = followedStocks.some((stock) => stock.symbol === stockData?.profile?.ticker);
 
     // Fetch general market news on component mount
     useEffect(() => {
@@ -148,6 +149,13 @@ function Dashboard() {
     // Store the interval ID to clear it when component unmounts or symbol changes
     const [liveUpdateInterval, setLiveUpdateInterval] = useState(null);
 
+    // Navigate to a stock’s details when clicked
+    const handleStockClick = async (symbol) => {
+        if (!symbol) return;
+        setSearchTerm(symbol);
+        await handleSearch(symbol); // Pass the symbol to the handleSearch function
+    };
+
     // Cleanup interval on component unmount
     useEffect(() => {
         return () => stopLiveUpdates(); // Clear interval when component unmounts
@@ -156,6 +164,38 @@ function Dashboard() {
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown);
     }; 
+
+    // Follow & Unfollow button function
+    const handleFollowUnfollow = async () => {
+        try {
+            if (!userId) {
+                console.error("User ID not available");
+                alert("You need to log in to follow/unfollow stocks.");
+                return;
+            }
+    
+            if (isFollowed) {
+                await axios.delete(`http://localhost:3001/api/follow/unfollow/${userId}`, {
+                    data: { symbol: stockData.profile.ticker },
+                });
+                setFollowedStocks((prev) =>
+                    prev.filter((stock) => stock.symbol !== stockData.profile.ticker)
+                );
+                alert("Stock unfollowed successfully!");
+            } else {
+                await axios.post(`http://localhost:3001/api/follow/follow/${userId}`, {
+                    symbol: stockData.profile.ticker,
+                });
+                setFollowedStocks((prev) => [
+                    ...prev,
+                    { symbol: stockData.profile.ticker, price: stockPrice.c },
+                ]);
+                alert("Stock added to followed list!");
+            }
+        } catch (error) {
+            console.error("Error toggling follow/unfollow:", error);
+        }
+    };
 
     return (
         <div className="dashboard-main-wrapper">
@@ -199,12 +239,21 @@ function Dashboard() {
                     </div>
                     <h3>Following</h3>
                     <div className="dashboard-left-bubble">
-                    {followedStocks.map((stock) => (
-                        <div key={stock.symbol} className="followed-stock-item">
-                        <span>{stock.symbol}</span>
-                        <span>${stock.price.toFixed(2)}</span>
-                        </div>
-                    ))}
+                        {followedStocks.length > 0 ? (
+                            followedStocks.map((stock) => (
+                                <div
+                                    key={stock.symbol}
+                                    className="followed-stock-item"
+                                    onClick={() => handleStockClick(stock.symbol)}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    <span>{stock.symbol} </span> {/* Space added here */}
+                                    <span>${stock.price.toFixed(2)}</span>
+                                </div>
+                            ))
+                        ) : (
+                            <p>No followed stocks to display</p>
+                        )}
                     </div>
                 </aside>
 
@@ -244,30 +293,8 @@ function Dashboard() {
                                             ${stockPrice.c} ({stockPrice.d > 0 ? '+' : ''}{stockPrice.dp}%)
                                         </span>
                                     </div>
-                                    <button
-                                        onClick={async () => {
-                                            try {
-                                                if (!userId) {
-                                                    console.error("User ID not available");
-                                                    alert("You need to log in to follow stocks.");
-                                                    return;
-                                                }
-
-                                                const response = await axios.post("http://localhost:3001/api/follow/follow", {
-                                                    _id: userId, // Pass userId as _id to match the backend's expected structure
-                                                    stockSymbol: stockData.profile.ticker,
-                                                });
-                                                alert("Stock added to followed list!");
-
-                                                // Refresh followed stocks
-                                                const followedStocksResponse = await axios.get(`http://localhost:3001/api/follow/followed-stocks/${userId}`);
-                                                setFollowedStocks(followedStocksResponse.data);
-                                            } catch (error) {
-                                                console.error("Error following stock:", error);
-                                            }
-                                        }}
-                                    >
-                                        Follow
+                                    <button onClick={handleFollowUnfollow}>
+                                        {isFollowed ? 'Unfollow' : 'Follow'}
                                     </button>
 
                                     <div className="home-row-content">
