@@ -1,8 +1,9 @@
 import React from 'react';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from 'axios';
 import { NavLink } from 'react-router-dom';
 import CandlestickChart from './CandlestickChart';
+import { AuthContext } from "./context/AuthContext";
 import "./style/Dashboard.css";
 
 function Dashboard() { 
@@ -14,6 +15,7 @@ function Dashboard() {
     const [searchError, setSearchError] = useState(null);
     const [newsError, setNewsError] = useState(null);
     const [candlestickData, setCandlestickData] = useState(null); // State for candlestick data
+    const { logout } = useContext(AuthContext);
 
     // Fetch general market news on component mount
     useEffect(() => {
@@ -147,14 +149,14 @@ function Dashboard() {
                     <NavLink to="/Dashboard" className={({ isActive }) => isActive ? "dashboard-tab-link active" : "dashboard-tab-link"}>
                         Dashboard
                     </NavLink>
+                    <NavLink to="/Portfolio" className={({ isActive }) => isActive ? "dashboard-tab-link active" : "dashboard-tab-link"}>
+                        Portfolio
+                    </NavLink>
                     <NavLink to="/About" className={({ isActive }) => isActive ? "dashboard-tab-link active" : "dashboard-tab-link"}>
                         About
                     </NavLink>
                     <NavLink to="/Help" className={({ isActive }) => isActive ? "dashboard-tab-link active" : "dashboard-tab-link"}>
                         Help
-                    </NavLink>
-                    <NavLink to="/Portfolio" className={({ isActive }) => isActive ? "dashboard-tab-link active" : "dashboard-tab-link"}>
-                        Portfolio
                     </NavLink>
                 </div>
                 <button className="dashboard-user" onClick={toggleDropdown}>
@@ -162,10 +164,8 @@ function Dashboard() {
                 </button>
                 {showDropdown && (
                     <div className="dashboard-dropdown-menu">
-                        <NavLink to="/" className="dashboard-dropdown-item">Home</NavLink>
-                        <NavLink to="/login" className="dashboard-dropdown-item">Login</NavLink>
-                        <NavLink to="/register" className="dashboard-dropdown-item">Sign Up</NavLink>
-                        <NavLink to="" className="dashboard-dropdown-item">Log Out</NavLink>
+                        <NavLink to="/dashboard" className="dashboard-dropdown-item">Dashboard</NavLink>
+                        <button onClick={logout} className="dashboard-dropdown-item">Log Out</button>
                     </div>
                 )}
             </div>

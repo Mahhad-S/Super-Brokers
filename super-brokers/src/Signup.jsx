@@ -17,19 +17,25 @@ function Signup() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+    
+        if (!username || !email || !password) {
+            alert("All fields are required");
+            return;
+        }
+    
         axios.post('http://localhost:3001/register', { username, email, password })
-          .then(result => {
-            console.log(result);
-            if (result.status === 201) {
-              navigate("/login");
-            } else {
-              alert(result.data.message); // Show error message
-            }
-          })
-          .catch(err => {
-            console.log(err);
-            alert(err.response?.data?.message || 'An error occurred'); // Show error message
-          });
+            .then(result => {
+                console.log(result);
+                if (result.status === 201) {
+                    navigate("/login");
+                } else {
+                    alert(result.data.message); // Show error message
+                }
+            })
+            .catch(err => {
+                console.log(err);
+                alert(err.response?.data?.message || 'An error occurred'); // Show error message
+            });
     };
 
     return (

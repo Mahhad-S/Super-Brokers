@@ -1,6 +1,7 @@
 import React from 'react';
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { NavLink } from 'react-router-dom';
+import { AuthContext } from "./context/AuthContext";
 import "./style/About.css";
 
 function About() {
@@ -8,6 +9,7 @@ function About() {
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown);
     }; 
+    const { isAuthenticated, logout } = useContext(AuthContext);
     
     return (
         <div className="about-main-wrapper">
@@ -18,17 +20,27 @@ function About() {
                 </div>
                 {/* Navigation Links */}
                 <div className="about-nav-links">
-                    <NavLink to="/Dashboard" className={({ isActive }) => isActive ? "about-tab-link active" : "about-tab-link"}>
-                        Dashboard
-                    </NavLink>
+                    {!isAuthenticated ? (
+                        <>
+                            <NavLink to="/" className={({ isActive }) => isActive ? "about-tab-link active" : "about-tab-link"}>
+                                Home
+                            </NavLink>
+                        </>
+                    ) : (
+                        <>
+                            <NavLink to="/Dashboard" className={({ isActive }) => isActive ? "about-tab-link active" : "about-tab-link"}>
+                                Dashboard
+                            </NavLink>
+                            <NavLink to="/Portfolio" className={({ isActive }) => isActive ? "about-tab-link active" : "about-tab-link"}>
+                                Portfolio
+                            </NavLink>
+                        </>
+                    )}
                     <NavLink to="/About" className={({ isActive }) => isActive ? "about-tab-link active" : "about-tab-link"}>
                         About
                     </NavLink>
                     <NavLink to="/Help" className={({ isActive }) => isActive ? "about-tab-link active" : "about-tab-link"}>
                         Help
-                    </NavLink>
-                    <NavLink to="/Portfolio" className={({ isActive }) => isActive ? "about-tab-link active" : "about-tab-link"}>
-                        Portfolio
                     </NavLink>
                 </div>
                 <button className="about-user" onClick={toggleDropdown}>
@@ -36,10 +48,18 @@ function About() {
                 </button>
                 {showDropdown && (
                     <div className="about-dropdown-menu">
-                        <NavLink to="/" className="about-dropdown-item">Home</NavLink>
-                        <NavLink to="/login" className="about-dropdown-item">Login</NavLink>
-                        <NavLink to="/register" className="about-dropdown-item">Sign Up</NavLink>
-                        <NavLink to="" className="about-dropdown-item">Log Out</NavLink>
+                        {!isAuthenticated ? (
+                            <>
+                                <NavLink to="/" className="about-dropdown-item">Home</NavLink>
+                                <NavLink to="/login" className="about-dropdown-item">Login</NavLink>
+                                <NavLink to="/register" className="about-dropdown-item">Sign Up</NavLink>
+                            </>
+                        ) : (
+                            <>
+                                <NavLink to="/dashboard" className="about-dropdown-item">Dashboard</NavLink>
+                                <button onClick={logout} className="about-dropdown-item">Log Out</button>
+                            </>
+                        )}
                     </div>
                 )}
             </div>

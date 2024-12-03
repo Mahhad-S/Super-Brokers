@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import './style/Home.css';
 import { NavLink } from 'react-router-dom';
 import CandlestickChart from './CandlestickChart';
+import { AuthContext } from './context/AuthContext';
 
 function Home() {
     const [searchTerm, setSearchTerm] = useState('');
@@ -13,6 +14,7 @@ function Home() {
     const [searchError, setSearchError] = useState(null);
     const [newsError, setNewsError] = useState(null);
     const [candlestickData, setCandlestickData] = useState(null); // State for candlestick data
+    const { isAuthenticated } = useContext(AuthContext);
 
     // Fetch general market news on component mount
     useEffect(() => {
@@ -144,9 +146,15 @@ function Home() {
                 </div>
                 {/* Navigation Links */}
                 <div className="home-nav-links">
-                    <NavLink to="/Dashboard" className={({ isActive }) => isActive ? "home-tab-link active" : "home-tab-link"}>
-                        Dashboard
-                    </NavLink>
+                    {!isAuthenticated ? (
+                        <NavLink to="/" className={({ isActive }) => isActive ? "home-tab-link active" : "home-tab-link"}>
+                            Home
+                        </NavLink>
+                    ) : (
+                        <NavLink to="/Dashboard" className={({ isActive }) => isActive ? "home-tab-link active" : "home-tab-link"}>
+                            Dashboard
+                        </NavLink>
+                    )}
                     <NavLink to="/About" className={({ isActive }) => isActive ? "home-tab-link active" : "home-tab-link"}>
                         About
                     </NavLink>
@@ -160,9 +168,12 @@ function Home() {
                 {showDropdown && (
                     <div className="home-dropdown-menu">
                         <NavLink to="/" className="home-dropdown-item">Home</NavLink>
-                        <NavLink to="/login" className="home-dropdown-item">Login</NavLink>
-                        <NavLink to="/register" className="home-dropdown-item">Sign Up</NavLink>
-                        <NavLink to="" className="home-dropdown-item">Log Out</NavLink>
+                        {!isAuthenticated && (
+                            <>
+                                <NavLink to="/login" className="home-dropdown-item">Login</NavLink>
+                                <NavLink to="/register" className="home-dropdown-item">Sign Up</NavLink>
+                            </>
+                        )}
                     </div>
                 )}
             </div>

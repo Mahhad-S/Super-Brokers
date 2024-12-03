@@ -4,6 +4,7 @@ const UserSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
+    default: "Anonymous", // Default value
   },
   email: {
     type: String,

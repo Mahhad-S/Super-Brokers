@@ -1,6 +1,7 @@
 import React from 'react';
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { NavLink } from 'react-router-dom';
+import { AuthContext } from "./context/AuthContext";
 import "./style/Help.css";
 
 function Help() {
@@ -33,6 +34,7 @@ function Help() {
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown);
     }; 
+    const { isAuthenticated, logout } = useContext(AuthContext);
 
     return (
         <div className="help-main-wrapper">
@@ -43,17 +45,27 @@ function Help() {
                 </div>
                 {/* Navigation Links */}
                 <div className="help-nav-links">
-                    <NavLink to="/Dashboard" className={({ isActive }) => isActive ? "help-tab-link active" : "help-tab-link"}>
-                        Dashboard
-                    </NavLink>
+                    {!isAuthenticated ? (
+                        <>
+                            <NavLink to="/" className={({ isActive }) => isActive ? "help-tab-link active" : "help-tab-link"}>
+                                Home
+                            </NavLink>
+                        </>
+                    ) : (
+                        <>
+                            <NavLink to="/Dashboard" className={({ isActive }) => isActive ? "help-tab-link active" : "help-tab-link"}>
+                                Dashboard
+                            </NavLink>
+                            <NavLink to="/Portfolio" className={({ isActive }) => isActive ? "help-tab-link active" : "help-tab-link"}>
+                                Portfolio
+                            </NavLink>
+                        </>
+                    )}
                     <NavLink to="/About" className={({ isActive }) => isActive ? "help-tab-link active" : "help-tab-link"}>
                         About
                     </NavLink>
                     <NavLink to="/Help" className={({ isActive }) => isActive ? "help-tab-link active" : "help-tab-link"}>
                         Help
-                    </NavLink>
-                    <NavLink to="/Portfolio" className={({ isActive }) => isActive ? "help-tab-link active" : "help-tab-link"}>
-                        Portfolio
                     </NavLink>
                 </div>
                 <button className="help-user" onClick={toggleDropdown}>
@@ -61,10 +73,18 @@ function Help() {
                 </button>
                 {showDropdown && (
                     <div className="help-dropdown-menu">
-                        <NavLink to="/" className="help-dropdown-item">Home</NavLink>
-                        <NavLink to="/login" className="help-dropdown-item">Login</NavLink>
-                        <NavLink to="/register" className="help-dropdown-item">Sign Up</NavLink>
-                        <NavLink to="" className="help-dropdown-item">Log Out</NavLink>
+                        {!isAuthenticated ? (
+                            <>
+                                <NavLink to="/" className="help-dropdown-item">Home</NavLink>
+                                <NavLink to="/login" className="help-dropdown-item">Login</NavLink>
+                                <NavLink to="/register" className="help-dropdown-item">Sign Up</NavLink>
+                            </>
+                        ) : (
+                            <>
+                                <NavLink to="/dashboard" className="help-dropdown-item">Dashboard</NavLink>
+                                <button onClick={logout} className="help-dropdown-item">Log Out</button>
+                            </>
+                        )}
                     </div>
                 )}
             </div>

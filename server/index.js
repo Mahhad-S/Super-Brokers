@@ -20,34 +20,44 @@ app.use(cors({
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE'
 }));
 
-app.post("/login", (req, res) => {
-    const {email, password} = req.body;
-    UserModel.findOne({email: email})
-    .then(user => {
-        if (user) {
-            if (user.password === password) {
-                res.json("Success")
-            } else {
-                res.json("the password is incorrect")
-            }
-        } else {
-            res.json("No record existed")
+app.post("/login", async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        const user = await UserModel.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
         }
-    })
-})
+
+        if (user.password !== password) {
+            return res.status(401).json({ message: "Invalid password" });
+        }
+
+        // Respond with success and user data (if necessary)
+        res.status(200).json({ message: "Login successful", user });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
 
 app.post("/register", async (req, res) => {
     const { username, email, password } = req.body;
-    
+
+    console.log("Incoming data:", { username, email, password });
+
+    if (!username || !email || !password) {
+        return res.status(400).json({ message: "All fields are required" });
+    }
+
     try {
         let user = await UserModel.findOne({ email });
         if (user) {
-            console.log("Email already exists");
             return res.status(400).json({ message: "Email already exists" });
         }
 
         user = new UserModel({ 
-            username, 
+            username, // Correctly map the username field
             email, 
             password, 
         });
@@ -58,6 +68,7 @@ app.post("/register", async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 });
+
 
 // Use the trade routes
 app.use('/api/trades', tradeRoutes); 

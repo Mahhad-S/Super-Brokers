@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { NavLink } from 'react-router-dom';
+import { AuthContext } from "./context/AuthContext";
 import './style/Portfolio.css';
 
 function Portfolio() {
@@ -12,6 +13,7 @@ function Portfolio() {
         }));
     };
     const [showDropdown, setShowDropdown] = useState(false);
+    const { logout } = useContext(AuthContext);
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown);
     }; 
@@ -28,14 +30,14 @@ function Portfolio() {
                     <NavLink to="/Dashboard" className={({ isActive }) => isActive ? "porta-tab-link active" : "porta-tab-link"}>
                         Dashboard
                     </NavLink>
+                    <NavLink to="/Portfolio" className={({ isActive }) => isActive ? "porta-tab-link active" : "porta-tab-link"}>
+                        Portfolio
+                    </NavLink>
                     <NavLink to="/About" className={({ isActive }) => isActive ? "porta-tab-link active" : "porta-tab-link"}>
                         About
                     </NavLink>
                     <NavLink to="/Help" className={({ isActive }) => isActive ? "porta-tab-link active" : "porta-tab-link"}>
                         Help
-                    </NavLink>
-                    <NavLink to="/Portfolio" className={({ isActive }) => isActive ? "porta-tab-link active" : "porta-tab-link"}>
-                        Portfolio
                     </NavLink>
                 </div>
                 <button className="porta-user" onClick={toggleDropdown}>
@@ -43,10 +45,8 @@ function Portfolio() {
                 </button>
                 {showDropdown && (
                     <div className="porta-dropdown-menu">
-                        <NavLink to="/" className="porta-dropdown-item">Home</NavLink>
-                        <NavLink to="/login" className="porta-dropdown-item">Login</NavLink>
-                        <NavLink to="/register" className="porta-dropdown-item">Sign Up</NavLink>
-                        <NavLink to="" className="porta-dropdown-item">Log Out</NavLink>
+                        <NavLink to="/dashboard" className="porta-dropdown-item">Dashboard</NavLink>
+                        <button onClick={logout} className="porta-dropdown-item">Log Out</button>
                     </div>
                 )}
             </div>

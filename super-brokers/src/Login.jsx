@@ -1,14 +1,14 @@
-import { useState } from "react";
-import { NavLink } from 'react-router-dom';
-import axios from 'axios';
-import { useNavigate } from "react-router-dom";
+import { useState, useContext } from "react";
+import { NavLink, useNavigate } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import icons for visibility toggle
 import './style/Login.css';  // Add this for styling
+import { AuthContext } from "./context/AuthContext";
 
 function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+    const { login } = useContext(AuthContext); // Use AuthContext to get login function
     const navigate = useNavigate();
     const [showDropdown, setShowDropdown] = useState(false);
 
@@ -16,18 +16,17 @@ function Login() {
         setShowDropdown(!showDropdown);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        axios.post('http://localhost:3001/login', { email, password })
-            .then(result => {
-                console.log(result);
-                if (result.data === "Success") {
-                    navigate("/dashboard");
-                } else {
-                    alert(result.data); // Show error message
-                }
-            })
-            .catch(err => console.log(err));
+        try {
+            const isSuccess = await login(email, password);
+            if (isSuccess) {
+                navigate("/dashboard"); // Redirect to dashboard upon successful login
+            }
+        } catch (error) {
+            console.error("Login error:", error);
+            alert("An error occurred. Please try again.");
+        }
     };
 
     return (
@@ -49,7 +48,7 @@ function Login() {
             </div>
             <div className="login-main-content">
                 <div className="login-image-holder">
-                    <img src="/images/stock.jpg" className="login-stock-img"/>
+                    <img src="/images/stock.jpg" className="login-stock-img" alt="Stock" />
                 </div>
                 <div className="login-form-container">
                     <img 
@@ -68,6 +67,7 @@ function Login() {
                                     autoComplete="off"
                                     name="email"
                                     className="form-control login-input-rounded"
+                                    value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
                             </div>
@@ -78,6 +78,7 @@ function Login() {
                                     placeholder="Enter Password"
                                     name="password"
                                     className="form-control login-input-rounded"
+                                    value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                 />
                                 {/* Icon to toggle show/hide password */}
