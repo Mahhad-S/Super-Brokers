@@ -66,13 +66,19 @@ router.get('/symbols', async (req, res) => {
 });
 
 router.get('/candlestick/:symbol', async (req, res) => {
-  const { symbol } = req.params;
   try {
-      const data = await getAlphaVantageCandlestickData(symbol);
-      res.json(data);
+      const symbol = req.params.symbol;
+      console.log(`Fetching candlestick data for symbol: ${symbol}`);
+
+      const candlestickData = await getCandlestickData(symbol); // Your data-fetching function
+      if (!candlestickData) {
+          throw new Error('No data returned from Alpha Vantage');
+      }
+
+      res.json(candlestickData);
   } catch (error) {
       console.error('Error fetching candlestick data:', error.message);
-      res.status(500).json({ error: 'Failed to retrieve candlestick data' });
+      res.status(500).json({ error: 'Failed to fetch candlestick data' });
   }
 });
 

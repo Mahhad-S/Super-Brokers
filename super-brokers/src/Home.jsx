@@ -32,22 +32,23 @@ function Home() {
         fetchMarketNews();
     }, []);
 
-    useEffect(() => {
-        const fetchCandlestickData = async () => {
-            if (!stockData || !stockData.profile || !stockData.profile.ticker) return;
-    
-            try {
-                const response = await fetch(`/api/alpha-vantage/candlestick-data?symbol=${stockData.profile.ticker}`);
-                if (!response.ok) throw new Error("Failed to fetch candlestick data");
-                const data = await response.json();
-                setCandlestickData(data);
-            } catch (error) {
-                console.error("Error fetching candlestick data:", error);
-                setCandlestickData(null); // Reset data to avoid rendering issues
+    const fetchCandlestickData = async (symbol) => {
+        try {
+            const response = await axios.get(`http://localhost:3001/api/stocks/candlestick/${symbol}`);
+            if (response.headers['content-type'] !== 'application/json') {
+                throw new Error('Invalid JSON response');
             }
-        };
-    
-        fetchCandlestickData();
+            setCandlestickData(response.data);
+        } catch (error) {
+            console.error('Error fetching candlestick data:', error.message);
+            setCandlestickData(null);
+        }
+    };
+
+    useEffect(() => {
+        if (stockData && stockData.profile && stockData.profile.ticker) {
+            fetchCandlestickData(stockData.profile.ticker);
+        }
     }, [stockData]);
 
     // Fetch stock suggestions when the user presses "Enter"
@@ -78,8 +79,7 @@ function Home() {
             setStockPrice(priceResponse.data);
     
             // Fetch candlestick data
-            const candlestickResponse = await axios.get(`http://localhost:3001/api/stocks/candlestick/${symbol}`);
-            setCandlestickData(candlestickResponse.data); // Update candlestick data
+            await fetchCandlestickData(symbol);
     
             // Fetch related company news
             const newsResponse = await axios.get(`http://localhost:3001/api/news/company-news/${symbol}`);
