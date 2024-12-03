@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import axios from 'axios';
 import { NavLink } from 'react-router-dom';
-import CandlestickChart from './CandlestickChart';
+//import CandlestickChart from './CandlestickChart';
 import { AuthContext } from './context/AuthContext';
 import './style/Home.css';
 
@@ -34,16 +34,13 @@ function Home() {
         fetchMarketNews();
     }, []);
 
+    /*
     const fetchCandlestickData = async (symbol) => {
         try {
             const response = await axios.get(`http://localhost:3001/api/stocks/candlestick/${symbol}`);
-            if (response.headers['content-type'] !== 'application/json') {
-                throw new Error('Invalid JSON response');
-            }
             setCandlestickData(response.data);
         } catch (error) {
             console.error('Error fetching candlestick data:', error.message);
-            setCandlestickData(null);
         }
     };
 
@@ -52,20 +49,21 @@ function Home() {
             fetchCandlestickData(stockData.profile.ticker);
         }
     }, [stockData]);
+    */
 
-        // Close dropdown if clicked outside
-        useEffect(() => {
-            const handleClickOutside = (e) => {
-                if (!document.querySelector('.home-search-bar-container')?.contains(e.target)) {
-                    setSuggestions([]);
-                }
-            };
+    // Close dropdown if clicked outside
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (!document.querySelector('.home-search-bar-container')?.contains(e.target)) {
+                setSuggestions([]);
+            }
+        };
         
-            document.addEventListener('mousedown', handleClickOutside);
-            return () => {
-                document.removeEventListener('mousedown', handleClickOutside);
-            };
-        }, []);
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     // Fetch stock suggestions when the user presses "Enter"
     const handleKeyPress = async (e) => {
@@ -95,7 +93,7 @@ function Home() {
             setStockPrice(priceResponse.data);
     
             // Fetch candlestick data
-            await fetchCandlestickData(symbol);
+            //await fetchCandlestickData(symbol);
     
             // Fetch related company news
             const newsResponse = await axios.get(`http://localhost:3001/api/news/company-news/${symbol}`);
@@ -233,9 +231,11 @@ function Home() {
                                         </span>
                                     </div>
 
+                                    {/*
                                     <div className="home-row-content">
                                         {candlestickData && <CandlestickChart data={candlestickData} />}
                                     </div>
+                                    */}
 
                                     <div className="home-row-content">
                                         <p>High Price (Day): ${stockPrice.h}</p>

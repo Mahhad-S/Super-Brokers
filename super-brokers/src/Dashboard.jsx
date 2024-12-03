@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, useContext, useRef } from "react";
 import axios from 'axios';
 import { NavLink } from 'react-router-dom';
-import CandlestickChart from './CandlestickChart';
+//import CandlestickChart from './CandlestickChart';
 import { AuthContext } from "./context/AuthContext";
 import "./style/Dashboard.css";
 
@@ -43,6 +43,7 @@ function Dashboard() {
         fetchMarketNews();
     }, []);
 
+    /* Candlestick Related
     useEffect(() => {
         const fetchCandlestickData = async () => {
             if (!stockData || !stockData.profile || !stockData.profile.ticker) return;
@@ -60,6 +61,7 @@ function Dashboard() {
     
         fetchCandlestickData();
     }, [stockData]);
+    */
 
     // Fetch followed stocks data for user
     useEffect(() => {
@@ -121,8 +123,8 @@ function Dashboard() {
             const priceResponse = await axios.get(`http://localhost:3001/api/stocks/stock-price/${symbol}`);
             setStockPrice(priceResponse.data);
     
-            const candlestickResponse = await axios.get(`http://localhost:3001/api/stocks/candlestick/${symbol}`);
-            setCandlestickData(candlestickResponse.data);
+            //const candlestickResponse = await axios.get(`http://localhost:3001/api/stocks/candlestick/${symbol}`);
+            //setCandlestickData(candlestickResponse.data);
     
             const newsResponse = await axios.get(`http://localhost:3001/api/news/company-news/${symbol}`);
             const randomNews = newsResponse.data.sort(() => 0.5 - Math.random()).slice(0, 3);
@@ -322,9 +324,11 @@ function Dashboard() {
                                         {isFollowed ? 'Unfollow' : 'Follow'}
                                     </button>
 
+                                    {/*
                                     <div className="home-row-content">
                                         {candlestickData && <CandlestickChart data={candlestickData} />}
                                     </div>
+                                    */}
 
                                     <div className="home-row-content">
                                         <p>High Price (Day): ${stockPrice.h}</p>

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getCompanyProfile, getStockPrice, getBasicFinancials, getStockSymbols, getSymbolLookup, } = require('../services/finnhubService');
-const { getAlphaVantageCandlestickData } = require('../services/alphaVantageService');
+//const { getAlphaVantageCandlestickData } = require('../services/alphaVantageService');
 
 // Endpoint to get company profile & basic financials by stock symbol
 router.get('/stock-info/:symbol', async (req, res) => {
@@ -65,21 +65,21 @@ router.get('/symbols', async (req, res) => {
     }
 });
 
+/*
 router.get('/candlestick/:symbol', async (req, res) => {
+  const { symbol } = req.params;
+
   try {
-      const symbol = req.params.symbol;
-      console.log(`Fetching candlestick data for symbol: ${symbol}`);
+      // Fetch candlestick data
+      const candlestickData = await getAlphaVantageCandlestickData(symbol);
 
-      const candlestickData = await getCandlestickData(symbol); // Your data-fetching function
-      if (!candlestickData) {
-          throw new Error('No data returned from Alpha Vantage');
-      }
-
-      res.json(candlestickData);
+      // Send data back to the client
+      res.status(200).json(candlestickData);
   } catch (error) {
       console.error('Error fetching candlestick data:', error.message);
-      res.status(500).json({ error: 'Failed to fetch candlestick data' });
+      res.status(500).json({ message: 'Server error while fetching candlestick data.' });
   }
 });
+*/
 
 module.exports = router;
