@@ -344,3 +344,41 @@ body, html {
 .dashboard-news-bubble a:hover {
     color: #0056b3;
 }
+
+.home-search-bar-container {
+    position: relative; /* Parent positioning context */
+}
+
+.home-search-bar {
+    position: relative;
+    width: 100%;
+    font-size: 16px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.dropdown {
+    position: absolute; /* Make it overlay */
+    z-index: 1000; /* Ensure it appears above other elements */
+    background-color: #fff; /* Match the dropdown style */
+    border: 1px solid #ddd; /* Border styling */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    width: calc(100% - 2px); /* Match the width of the search bar */
+    margin-top: 4px; /* Small gap below the search bar */
+    list-style: none; /* Remove bullet points */
+    padding: 0;
+    max-height: 200px; /* Limit height */
+    overflow-y: auto; /* Enable scrolling if too long */
+}
+
+.dropdown li {
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown li:hover {
+    background-color: #f1f1f1;
+}

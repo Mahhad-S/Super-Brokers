@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import axios from 'axios';
 import { NavLink } from 'react-router-dom';
 import CandlestickChart from './CandlestickChart';
@@ -9,6 +9,7 @@ import "./style/Dashboard.css";
 function Dashboard() { 
     const [searchTerm, setSearchTerm] = useState('');
     const [suggestions, setSuggestions] = useState([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
     const [stockData, setStockData] = useState(null);
     const [stockPrice, setStockPrice] = useState(null); // State for stock price
     const [newsArticles, setNewsArticles] = useState([]);
@@ -16,6 +17,7 @@ function Dashboard() {
     const [newsError, setNewsError] = useState(null);
     const [candlestickData, setCandlestickData] = useState(null); // State for candlestick data
     const { logout } = useContext(AuthContext);
+    const searchRef = useRef(null);
 
     // Fetch general market news on component mount
     useEffect(() => {
@@ -58,13 +60,27 @@ function Dashboard() {
             try {
                 const response = await axios.get(`http://localhost:3001/api/stocks/symbol-lookup/${searchTerm}`);
                 setSuggestions(response.data.result || []);
-                setSearchError(null);
+                setShowSuggestions(true);
             } catch (err) {
                 setSuggestions([]);
                 setSearchError('Failed to fetch symbol suggestions. Please try again.');
             }
         }
     };
+
+    // Close dropdown on outside click
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (!document.querySelector('.home-search-bar-container')?.contains(e.target)) {
+                setSuggestions([]);
+            }
+        };
+    
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     // Fetch stock details, price, and company-specific news when a symbol is selected
     const handleSearch = async (symbol) => {
@@ -90,6 +106,7 @@ function Dashboard() {
             setSearchError(null);
             setSuggestions([]);
             setSearchTerm('');
+            setShowSuggestions(false);
         } catch (err) {
             setSearchError('Failed to fetch stock information or candlestick data. Please try again.');
             setStockData(null);
@@ -186,24 +203,26 @@ function Dashboard() {
                 <section className="dashboard-main-content">
 
                     <section className="dashboard-main-left">
-                        <section className="dashboard-sub-top">
-                            <input
-                                type="text"
-                                className="home-search-bar"
-                                placeholder="Search for a stock..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                onKeyDown={handleKeyPress} // Trigger on "Enter" key press
-                            />
-                            {suggestions.length > 0 && (
-                                <ul className="dropdown">
-                                    {suggestions.map((item, index) => (
-                                        <li key={index} onClick={() => handleSearch(item.symbol)}>
-                                            <strong>{item.displaySymbol}</strong> - {item.description}
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
+                        <section className="dashboard-sub-top" ref={searchRef}>
+                            <div className="home-search-bar-container">
+                                <input
+                                    type="text"
+                                    className="home-search-bar"
+                                    placeholder="Search for a stock..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    onKeyDown={handleKeyPress} // Trigger on "Enter" key press
+                                />
+                                {suggestions.length > 0 && (
+                                    <ul className="dropdown">
+                                        {suggestions.map((item, index) => (
+                                            <li key={index} onClick={() => handleSearch(item.symbol)}>
+                                                <strong>{item.displaySymbol}</strong> - {item.description}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </div>
                         </section>
                         <section className="dashboard-sub-left">
                         <div className="home-content-left">
