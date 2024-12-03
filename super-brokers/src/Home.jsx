@@ -195,30 +195,30 @@ function Home() {
 
             <div className="home-body-content">
                 
-            <section className="dashboard-main-left">
-                        <section className="dashboard-sub-top" ref={searchRef}>
-                            <div className="home-search-bar-container">
-                                <input
-                                    type="text"
-                                    className="home-search-bar"
-                                    placeholder="Search for a stock..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    onKeyDown={handleKeyPress} // Trigger on "Enter" key press
-                                />
-                                {suggestions.length > 0 && (
-                                    <ul className="dropdown">
-                                        {suggestions.map((item, index) => (
-                                            <li key={index} onClick={() => handleSearch(item.symbol)}>
-                                                <strong>{item.displaySymbol}</strong> - {item.description}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-                            </div>
-                        </section>
-                        
-                        <section className="dashboard-sub-left">
+                <section className="dashboard-main-left">
+                    <section className="dashboard-sub-top" ref={searchRef}>
+                        <div className="home-search-bar-container">
+                            <input
+                                type="text"
+                                className="home-search-bar"
+                                placeholder="Search for a stock..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                onKeyDown={handleKeyPress} // Trigger on "Enter" key press
+                            />
+                            {suggestions.length > 0 && (
+                                <ul className="dropdown">
+                                    {suggestions.map((item, index) => (
+                                        <li key={index} onClick={() => handleSearch(item.symbol)}>
+                                            <strong>{item.displaySymbol}</strong> - {item.description}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+                    </section>
+                    
+                    <section className="dashboard-sub-left">
                         <div className="home-content-left">
                             {stockData && stockPrice && (
                                 <div>
@@ -263,9 +263,9 @@ function Home() {
                             )}
                             {searchError && <p className="error">{searchError}</p>}
                         </div>
-                        </section>
-
-                    <section className="home-main-right">
+                    </section>
+                </section>
+                <section className="home-main-right">
                         <div className="home-news-bubble">
                         {newsArticles[0] ? (
                             <div>
@@ -308,10 +308,8 @@ function Home() {
                             <p>Loading...</p>
                         )}
                         </div>
-                    </section>
                 </section>
             </div>
-            {newsError && <p className="error">{newsError}</p>}
         </div>
     );
 }
