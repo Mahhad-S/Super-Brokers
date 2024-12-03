@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import axios from 'axios';
-import './style/Home.css';
 import { NavLink } from 'react-router-dom';
 import CandlestickChart from './CandlestickChart';
 import { AuthContext } from './context/AuthContext';
+import './style/Home.css';
 
 function Home() {
     const [searchTerm, setSearchTerm] = useState('');
@@ -15,6 +15,8 @@ function Home() {
     const [newsError, setNewsError] = useState(null);
     const [candlestickData, setCandlestickData] = useState(null); // State for candlestick data
     const { isAuthenticated } = useContext(AuthContext);
+    const [showDropdown, setShowDropdown] = useState(false);
+    const searchRef = useRef(null); // Ref to detect clicks outside
 
     // Fetch general market news on component mount
     useEffect(() => {
@@ -49,6 +51,20 @@ function Home() {
     
         fetchCandlestickData();
     }, [stockData]);
+
+        // Close dropdown if clicked outside
+        useEffect(() => {
+            const handleClickOutside = (e) => {
+                if (!document.querySelector('.home-search-bar-container')?.contains(e.target)) {
+                    setSuggestions([]);
+                }
+            };
+        
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }, []);
 
     // Fetch stock suggestions when the user presses "Enter"
     const handleKeyPress = async (e) => {
@@ -133,7 +149,6 @@ function Home() {
     }, []);
 
     // Dropdown
-    const [showDropdown, setShowDropdown] = useState(false);
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown);
     };
@@ -179,26 +194,32 @@ function Home() {
             </div>
 
             <div className="home-body-content">
-                <section className="home-main-content">
-                    <section className="home-main-left">
+                
+            <section className="dashboard-main-left">
+                        <section className="dashboard-sub-top" ref={searchRef}>
+                            <div className="home-search-bar-container">
+                                <input
+                                    type="text"
+                                    className="home-search-bar"
+                                    placeholder="Search for a stock..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    onKeyDown={handleKeyPress} // Trigger on "Enter" key press
+                                />
+                                {suggestions.length > 0 && (
+                                    <ul className="dropdown">
+                                        {suggestions.map((item, index) => (
+                                            <li key={index} onClick={() => handleSearch(item.symbol)}>
+                                                <strong>{item.displaySymbol}</strong> - {item.description}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </div>
+                        </section>
+                        
+                        <section className="dashboard-sub-left">
                         <div className="home-content-left">
-                            <input
-                                type="text"
-                                className="home-search-bar"
-                                placeholder="Search for a stock..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                onKeyDown={handleKeyPress} // Trigger on "Enter" key press
-                            />
-                            {suggestions.length > 0 && (
-                                <ul className="dropdown">
-                                    {suggestions.map((item, index) => (
-                                        <li key={index} onClick={() => handleSearch(item.symbol)}>
-                                            <strong>{item.displaySymbol}</strong> - {item.description}
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
                             {stockData && stockPrice && (
                                 <div>
                                     <div className="home-stock-name">
@@ -230,11 +251,20 @@ function Home() {
                                         <p>52-Week Return: {stockData.financials['52WeekPriceReturnDaily']}%</p>
                                         <p>Beta: {stockData.financials['beta']}</p>
                                     </div>
+
+                                    <div className="dashboard-row-content">
+                                        <h3>COMPANY / Stock Summary will go here</h3> 
+                                        <p>Lorem ipsum odor amet, consectetuer adipiscing elit. Consectetur nulla sodales mattis, ridiculus luctus vehicula dolor. Pretium litora parturient mi vitae 
+                                            sed consequat sagittis; at nullam. Eros eros vehicula lorem dui id viverra hendrerit. Dolor convallis euismod justo; netus ligula imperdiet rutrum maximus.</p>
+                                        <p>Lorem ipsum odor amet, consectetuer adipiscing elit. Consectetur nulla sodales mattis, ridiculus luctus vehicula dolor. Pretium litora parturient mi vitae 
+                                            sed consequat sagittis; at nullam. Eros eros vehicula lorem dui id viverra hendrerit. Dolor convallis euismod justo; netus ligula imperdiet rutrum maximus.</p>
+                                    </div>
                                 </div>
                             )}
-                        {searchError && <p className="error">{searchError}</p>}
+                            {searchError && <p className="error">{searchError}</p>}
                         </div>
-                    </section>
+                        </section>
+
                     <section className="home-main-right">
                         <div className="home-news-bubble">
                         {newsArticles[0] ? (

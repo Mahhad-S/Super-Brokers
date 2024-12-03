@@ -224,6 +224,7 @@ function Dashboard() {
                                 )}
                             </div>
                         </section>
+                        
                         <section className="dashboard-sub-left">
                         <div className="home-content-left">
                             {stockData && stockPrice && (
@@ -267,9 +268,10 @@ function Dashboard() {
                                     </div>
                                 </div>
                             )}
-                        {searchError && <p className="error">{searchError}</p>}
+                            {searchError && <p className="error">{searchError}</p>}
                         </div>
                         </section>
+                        
                         <section className="dashboard-sub-right">
                             <div className="dashboard-buy-sell-panel">
                                 <div className="tab-button active">Buy</div>
