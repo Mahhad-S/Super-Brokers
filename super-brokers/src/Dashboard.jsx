@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import axios from 'axios';
 import { NavLink } from 'react-router-dom';
 import CandlestickChart from './CandlestickChart';
@@ -9,6 +9,7 @@ import "./style/Dashboard.css";
 function Dashboard() { 
     const [searchTerm, setSearchTerm] = useState('');
     const [suggestions, setSuggestions] = useState([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
     const [stockData, setStockData] = useState(null);
     const [stockPrice, setStockPrice] = useState(null); // State for stock price
     const [newsArticles, setNewsArticles] = useState([]);
@@ -16,6 +17,12 @@ function Dashboard() {
     const [newsError, setNewsError] = useState(null);
     const [candlestickData, setCandlestickData] = useState(null); // State for candlestick data
     const { logout } = useContext(AuthContext);
+    const searchRef = useRef(null);
+    const [mode, setMode] = useState("Buy"); // Active mode: Buy or Sell
+    const [sellAmount, setSellAmount] = useState(""); // Sell shares input
+    const currentPrice = 50; // Example: Replace with Finnhub API data
+    const sharesHeld = 100; // Example: Replace with Finnhub API data
+    const totalSale = sellAmount ? (sellAmount * currentPrice).toFixed(2) : "0.00"; // Calculate total sale for Sell Mode
     const [followedStocks, setFollowedStocks] = useState([]);
     const { userId } = useContext(AuthContext);
     const isFollowed = followedStocks.some((stock) => stock.symbol === stockData?.profile?.ticker);
@@ -82,13 +89,27 @@ function Dashboard() {
             try {
                 const response = await axios.get(`http://localhost:3001/api/stocks/symbol-lookup/${searchTerm}`);
                 setSuggestions(response.data.result || []);
-                setSearchError(null);
+                setShowSuggestions(true);
             } catch (err) {
                 setSuggestions([]);
                 setSearchError('Failed to fetch symbol suggestions. Please try again.');
             }
         }
     };
+
+    // Close dropdown on outside click
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (!document.querySelector('.home-search-bar-container')?.contains(e.target)) {
+                setSuggestions([]);
+            }
+        };
+    
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     // Fetch stock details, price, and company-specific news when a symbol is selected
     const handleSearch = async (symbol) => {
@@ -110,6 +131,7 @@ function Dashboard() {
             setSearchError(null);
             setSuggestions([]);
             setSearchTerm('');
+            setShowSuggestions(false);
         } catch (err) {
             console.error("Error fetching stock data:", err);
             setSearchError('Failed to fetch stock information or candlestick data. Please try again.');
@@ -260,25 +282,28 @@ function Dashboard() {
                 <section className="dashboard-main-content">
 
                     <section className="dashboard-main-left">
-                        <section className="dashboard-sub-top">
-                            <input
-                                type="text"
-                                className="home-search-bar"
-                                placeholder="Search for a stock..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                onKeyDown={handleKeyPress} // Trigger on "Enter" key press
-                            />
-                            {suggestions.length > 0 && (
-                                <ul className="dropdown">
-                                    {suggestions.map((item, index) => (
-                                        <li key={index} onClick={() => handleSearch(item.symbol)}>
-                                            <strong>{item.displaySymbol}</strong> - {item.description}
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
+                        <section className="dashboard-sub-top" ref={searchRef}>
+                            <div className="home-search-bar-container">
+                                <input
+                                    type="text"
+                                    className="home-search-bar"
+                                    placeholder="Search for a stock..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    onKeyDown={handleKeyPress} // Trigger on "Enter" key press
+                                />
+                                {suggestions.length > 0 && (
+                                    <ul className="dropdown">
+                                        {suggestions.map((item, index) => (
+                                            <li key={index} onClick={() => handleSearch(item.symbol)}>
+                                                <strong>{item.displaySymbol}</strong> - {item.description}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </div>
                         </section>
+                        
                         <section className="dashboard-sub-left">
                         <div className="home-content-left">
                             {stockData && stockPrice && (
@@ -325,21 +350,65 @@ function Dashboard() {
                                     </div>
                                 </div>
                             )}
-                        {searchError && <p className="error">{searchError}</p>}
+                            {searchError && <p className="error">{searchError}</p>}
                         </div>
                         </section>
+                        
                         <section className="dashboard-sub-right">
-                            <div className="dashboard-buy-sell-panel">
-                                <div className="tab-button active">Buy</div>
-                                <div className="tab-button">Sell</div>
+                        <div className="dashboard-buy-sell-panel">
+                            <div>
+                                {/* Toggle Buttons */}
+                                <button
+                                className={`tab-button ${mode === "Buy" ? "active" : ""}`}
+                                onClick={() => setMode("Buy")}
+                                >
+                                Buy
+                                </button>
+                                <button
+                                className={`tab-button ${mode === "Sell" ? "active" : ""}`}
+                                onClick={() => setMode("Sell")}
+                                >
+                                Sell
+                                </button>
+                            </div>
+
+                            {/* Sell Mode Panel */}
+                            {mode === "Sell" && (
                                 <div>
-                                    <p>Curr. Price/Share: $x.xx</p>
-                                    <p>Buying Power (User): $x.xx</p>
-                                    <input type="number" placeholder="Buy Amount (Shares)" style={{ width: "100%", fontSize: "0.8rem" }} />
-                                    <p>Avg. Cost Per Share: $x.xx</p>
-                                    <p>Total Cost: $x.xx</p>
-                                    <button className="dashboard-purchase-button">Purchase</button>
+                                <p>Curr. Price/Share: ${currentPrice}</p>
+                                <p>Shares Held: {sharesHeld} Shares</p>
+                                <label>
+                                    Sell Amount (Shares):
+                                    <input
+                                    type="number"
+                                    value={sellAmount}
+                                    onChange={(e) => setSellAmount(e.target.value)}
+                                    className="home-search-bar" // Reusing your input styling
+                                    />
+                                </label>
+                                <p>Total Sale: ${totalSale}</p>
+                                <button className="dashboard-purchase-button">Sell</button>
                                 </div>
+                            )}
+
+                            {/* Buy Mode Panel Placeholder */}
+                            {mode === "Buy" && (
+                                <div>
+                                <p>Curr. Price/Share: ${currentPrice}</p>
+                                <p>Shares Held: {sharesHeld} Shares</p>
+                                <label>
+                                    Buy Amount (Shares):
+                                    <input
+                                    type="number"
+                                    value={sellAmount}
+                                    onChange={(e) => setSellAmount(e.target.value)}
+                                    className="home-search-bar" // Reusing your input styling
+                                    />
+                                </label>
+                                <p>Total Sale: ${totalSale}</p>
+                                <button className="dashboard-purchase-button">Sell</button>
+                                </div>
+                            )}
                             </div>
                         </section>
                     </section>
