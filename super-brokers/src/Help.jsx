@@ -24,6 +24,7 @@ function Help() {
             content: "Learn how to manage your account settings, update your profile information, and customize your preferences for a better experience."
         }
     ];
+    
     const toggleItem = (index) => {
         setOpenItems(prev => ({
             ...prev,

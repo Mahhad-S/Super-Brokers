@@ -238,22 +238,32 @@ function Home() {
                                     */}
 
                                     <div className="home-row-content">
-                                        <p>High Price (Day): ${stockPrice.h}</p>
-                                        <p>Low Price (Day): ${stockPrice.l}</p>
-                                        <p>Open Price: ${stockPrice.o}</p>
-                                        <p>Previous Close: ${stockPrice.pc}</p>
-                                        <p>Market Capitalization: ${stockData.profile.marketCapitalization}</p>
-                                        <p>Industry: {stockData.profile.finnhubIndustry}</p>
-                                        <p>10-Day Average Volume: {stockData.financials['10DayAverageTradingVolume']}</p>
-                                        <p>52-Week High: ${stockData.financials['52WeekHigh']}</p>
-                                        <p>52-Week Low: ${stockData.financials['52WeekLow']}</p>
-                                        <p>52-Week Low Date: {stockData.financials['52WeekLowDate']}</p>
-                                        <p>52-Week Return: {stockData.financials['52WeekPriceReturnDaily']}%</p>
-                                        <p>Beta: {stockData.financials['beta']}</p>
+                                        <table>
+                                            <tr>
+                                                <td>High Price (Day): ${stockPrice.h}</td>
+                                                <td>Market Capitalization: ${stockData.profile.marketCapitalization}</td>
+                                                <td>52-Week High: ${stockData.financials['52WeekHigh']}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Low Price (Day): ${stockPrice.l}</td>
+                                                <td>Industry: {stockData.profile.finnhubIndustry}</td>
+                                                <td>52-Week Low: ${stockData.financials['52WeekLow']}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Open Price: ${stockPrice.o}</td>
+                                                <td>10-Day Average Volume: {stockData.financials['10DayAverageTradingVolume']}</td>
+                                                <td>52-Week Low Date: {stockData.financials['52WeekLowDate']}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Previous Close: ${stockPrice.pc}</td>
+                                                <td>Beta: {stockData.financials['beta']}</td>
+                                                <td>52-Week Return: {stockData.financials['52WeekPriceReturnDaily']}%</td>
+                                            </tr>
+                                        </table>
                                     </div>
 
                                     <div className="dashboard-row-content">
-                                        <h3>COMPANY / Stock Summary will go here</h3> 
+                                        <h3 >COMPANY / STOCK SUMMARY</h3> 
                                         <p>Lorem ipsum odor amet, consectetuer adipiscing elit. Consectetur nulla sodales mattis, ridiculus luctus vehicula dolor. Pretium litora parturient mi vitae 
                                             sed consequat sagittis; at nullam. Eros eros vehicula lorem dui id viverra hendrerit. Dolor convallis euismod justo; netus ligula imperdiet rutrum maximus.</p>
                                         <p>Lorem ipsum odor amet, consectetuer adipiscing elit. Consectetur nulla sodales mattis, ridiculus luctus vehicula dolor. Pretium litora parturient mi vitae 
