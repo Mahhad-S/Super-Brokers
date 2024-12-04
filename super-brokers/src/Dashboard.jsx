@@ -308,7 +308,7 @@ function Dashboard() {
                         <section className="dashboard-sub-left">
                             <div className="dashboard-stock-info">
                                 {stockData && stockPrice && (
-                                    <div>
+                                    <div className="dashboard-stock-info-interior">
                                         <div className="dashboard-stock-name">
                                             {stockData.profile.ticker}
                                             <span
@@ -329,7 +329,7 @@ function Dashboard() {
                                         </div>
                                         */}
 
-                                        <div className="dashboard-row-content">
+                                        <div className="dashboard-stock-stats">
                                         <table>
                                                 <tr>
                                                     <td>High Price (Day): ${stockPrice.h}</td>
@@ -354,7 +354,7 @@ function Dashboard() {
                                             </table>
                                         </div>
 
-                                        <div className="dashboard-row-content">
+                                        <div className="dashboard-stock-summary">
                                             <h3>COMPANY / Stock Summary will go here</h3> 
                                             <p>Lorem ipsum odor amet, consectetuer adipiscing elit. Consectetur nulla sodales mattis, ridiculus luctus vehicula dolor. Pretium litora parturient mi vitae 
                                                 sed consequat sagittis; at nullam. Eros eros vehicula lorem dui id viverra hendrerit. Dolor convallis euismod justo; netus ligula imperdiet rutrum maximus.</p>
