@@ -172,7 +172,7 @@ body, html {
 }
 
 .dashboard-search-bar-container {
-    position: relative; /* Parent positioning context */
+    position: relative;
 }
 
 .dashboard-search-bar {
