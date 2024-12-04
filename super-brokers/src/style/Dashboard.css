@@ -21,7 +21,7 @@ body, html {
     background-color: #6c757d;
 }
 
-/* Hot Bar */
+/* Hot Bar ----------------------------------------------------------------------- */
 .dashboard-hot-bar {
     display: grid;
     grid-template-columns: auto 1fr;
@@ -118,6 +118,7 @@ body, html {
     background-color: #f1f1f1;
 }
 
+/* Body Content  ----------------------------------------------------------------------- */
 .dashboard-body-content {
     display: grid;
     grid-template-columns: 200px 1fr;
@@ -126,6 +127,7 @@ body, html {
     background-color: #000000;
 }
 
+/* Sidebar Content  -------------------------------- */
 .dashboard-sidebar-content {
     background-color: #2b2a2a;
     padding: 20px;
@@ -145,7 +147,7 @@ body, html {
     font-size: 0.9rem;
 }
 
-/* Main Content */
+/* Main Content  ----------------------------------- */
 .dashboard-main-content {
     display: grid;
     padding: 20px;
@@ -154,11 +156,13 @@ body, html {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* Main Left  ----------------------------- */
 .dashboard-main-left {
     grid-column: 1 / 2;
     display: grid;
 }
 
+/* Sub Top  ------------------ */
 .dashboard-sub-top {
     grid-column: 1 / 3;
     grid-row: 1 / 2;
@@ -204,6 +208,7 @@ body, html {
     background-color: #f1f1f1;
 }
 
+/* Sub Left  ----------------- */
 .dashboard-sub-left {
     grid-column: 1 / 2;
     grid-row: 2 / 3;
@@ -302,6 +307,7 @@ td {
     color: white;
 }
 
+/* Sub Right  ----------------- */
 .dashboard-sub-right {
     grid-column: 2 / 3;
     grid-row: 2 / 3;
@@ -368,6 +374,7 @@ background-color: #ccc;
     background-color: #0056b3;
 }
 
+/* Main Right  ----------------------------- */
 .dashboard-main-right {
     grid-column: 2 / 3;
     display: grid;
