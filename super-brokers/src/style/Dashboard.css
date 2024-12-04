@@ -298,6 +298,10 @@ td {
     color: black;
 }
 
+.error {
+    color: white;
+}
+
 .dashboard-sub-right {
     grid-column: 2 / 3;
     grid-row: 2 / 3;
