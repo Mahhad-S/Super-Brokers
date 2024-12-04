@@ -419,7 +419,7 @@ function Dashboard() {
                                     />
                                 </label>
                                 <p>Total Sale: ${totalSale}</p>
-                                <button className="dashboard-purchase-button">Sell</button>
+                                <button className="dashboard-purchase-button">Buy</button>
                                 </div>
                             )}
                             </div>
