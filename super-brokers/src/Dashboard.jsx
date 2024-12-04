@@ -102,7 +102,7 @@ function Dashboard() {
     // Close dropdown on outside click
     useEffect(() => {
         const handleClickOutside = (e) => {
-            if (!document.querySelector('.home-search-bar-container')?.contains(e.target)) {
+            if (!document.querySelector('.dashboard-search-bar-container')?.contains(e.target)) {
                 setSuggestions([]);
             }
         };
@@ -285,17 +285,17 @@ function Dashboard() {
 
                     <section className="dashboard-main-left">
                         <section className="dashboard-sub-top" ref={searchRef}>
-                            <div className="home-search-bar-container">
+                            <div className="dashboard-search-bar-container">
                                 <input
                                     type="text"
-                                    className="home-search-bar"
+                                    className="dashboard-search-bar"
                                     placeholder="Search for a stock..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     onKeyDown={handleKeyPress} // Trigger on "Enter" key press
                                 />
                                 {suggestions.length > 0 && (
-                                    <ul className="dropdown">
+                                    <ul className="dashboard-search-dropdown">
                                         {suggestions.map((item, index) => (
                                             <li key={index} onClick={() => handleSearch(item.symbol)}>
                                                 <strong>{item.displaySymbol}</strong> - {item.description}
@@ -305,67 +305,66 @@ function Dashboard() {
                                 )}
                             </div>
                         </section>
-                        
                         <section className="dashboard-sub-left">
-                        <div className="home-content-left">
-                            {stockData && stockPrice && (
-                                <div>
-                                    <div className="home-stock-name">
-                                        {stockData.profile.ticker}
-                                        <span
-                                            className={`stock-price ${
-                                                stockPrice.d > 0 ? 'positive' : 'negative'
-                                            }`}
-                                        >
-                                            ${stockPrice.c} ({stockPrice.d > 0 ? '+' : ''}{stockPrice.dp}%)
-                                        </span>
-                                    </div>
-                                    <button onClick={handleFollowUnfollow}>
-                                        {isFollowed ? 'Unfollow' : 'Follow'}
-                                    </button>
+                            <div className="dashboard-stock-info">
+                                {stockData && stockPrice && (
+                                    <div>
+                                        <div className="dashboard-stock-name">
+                                            {stockData.profile.ticker}
+                                            <span
+                                                className={`stock-price ${
+                                                    stockPrice.d > 0 ? 'positive' : 'negative'
+                                                }`}
+                                            >
+                                                ${stockPrice.c} ({stockPrice.d > 0 ? '+' : ''}{stockPrice.dp}%)
+                                            </span>
+                                        </div>
+                                        <button onClick={handleFollowUnfollow}>
+                                            {isFollowed ? 'Unfollow' : 'Follow'}
+                                        </button>
 
-                                    {/*
-                                    <div className="home-row-content">
-                                        {candlestickData && <CandlestickChart data={candlestickData} />}
-                                    </div>
-                                    */}
+                                        {/*
+                                        <div className="dashboard-row-content">
+                                            {candlestickData && <CandlestickChart data={candlestickData} />}
+                                        </div>
+                                        */}
 
-                                    <div className="home-row-content">
-                                    <table>
-                                            <tr>
-                                                <td>High Price (Day): ${stockPrice.h}</td>
-                                                <td>Market Capitalization: ${stockData.profile.marketCapitalization}</td>
-                                                <td>52-Week High: ${stockData.financials['52WeekHigh']}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Low Price (Day): ${stockPrice.l}</td>
-                                                <td>Industry: {stockData.profile.finnhubIndustry}</td>
-                                                <td>52-Week Low: ${stockData.financials['52WeekLow']}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Open Price: ${stockPrice.o}</td>
-                                                <td>10-Day Average Volume: {stockData.financials['10DayAverageTradingVolume']}</td>
-                                                <td>52-Week Low Date: {stockData.financials['52WeekLowDate']}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Previous Close: ${stockPrice.pc}</td>
-                                                <td>Beta: {stockData.financials['beta']}</td>
-                                                <td>52-Week Return: {stockData.financials['52WeekPriceReturnDaily']}%</td>
-                                            </tr>
-                                        </table>
-                                    </div>
+                                        <div className="dashboard-row-content">
+                                        <table>
+                                                <tr>
+                                                    <td>High Price (Day): ${stockPrice.h}</td>
+                                                    <td>Market Capitalization: ${stockData.profile.marketCapitalization}</td>
+                                                    <td>52-Week High: ${stockData.financials['52WeekHigh']}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Low Price (Day): ${stockPrice.l}</td>
+                                                    <td>Industry: {stockData.profile.finnhubIndustry}</td>
+                                                    <td>52-Week Low: ${stockData.financials['52WeekLow']}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Open Price: ${stockPrice.o}</td>
+                                                    <td>10-Day Average Volume: {stockData.financials['10DayAverageTradingVolume']}</td>
+                                                    <td>52-Week Low Date: {stockData.financials['52WeekLowDate']}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Previous Close: ${stockPrice.pc}</td>
+                                                    <td>Beta: {stockData.financials['beta']}</td>
+                                                    <td>52-Week Return: {stockData.financials['52WeekPriceReturnDaily']}%</td>
+                                                </tr>
+                                            </table>
+                                        </div>
 
-                                    <div className="dashboard-row-content">
-                                        <h3>COMPANY / Stock Summary will go here</h3> 
-                                        <p>Lorem ipsum odor amet, consectetuer adipiscing elit. Consectetur nulla sodales mattis, ridiculus luctus vehicula dolor. Pretium litora parturient mi vitae 
-                                            sed consequat sagittis; at nullam. Eros eros vehicula lorem dui id viverra hendrerit. Dolor convallis euismod justo; netus ligula imperdiet rutrum maximus.</p>
-                                        <p>Lorem ipsum odor amet, consectetuer adipiscing elit. Consectetur nulla sodales mattis, ridiculus luctus vehicula dolor. Pretium litora parturient mi vitae 
-                                            sed consequat sagittis; at nullam. Eros eros vehicula lorem dui id viverra hendrerit. Dolor convallis euismod justo; netus ligula imperdiet rutrum maximus.</p>
+                                        <div className="dashboard-row-content">
+                                            <h3>COMPANY / Stock Summary will go here</h3> 
+                                            <p>Lorem ipsum odor amet, consectetuer adipiscing elit. Consectetur nulla sodales mattis, ridiculus luctus vehicula dolor. Pretium litora parturient mi vitae 
+                                                sed consequat sagittis; at nullam. Eros eros vehicula lorem dui id viverra hendrerit. Dolor convallis euismod justo; netus ligula imperdiet rutrum maximus.</p>
+                                            <p>Lorem ipsum odor amet, consectetuer adipiscing elit. Consectetur nulla sodales mattis, ridiculus luctus vehicula dolor. Pretium litora parturient mi vitae 
+                                                sed consequat sagittis; at nullam. Eros eros vehicula lorem dui id viverra hendrerit. Dolor convallis euismod justo; netus ligula imperdiet rutrum maximus.</p>
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                            {searchError && <p className="error">{searchError}</p>}
-                        </div>
+                                )}
+                                {searchError && <p className="error">{searchError}</p>}
+                            </div>
                         </section>
                         
                         <section className="dashboard-sub-right">
@@ -373,13 +372,13 @@ function Dashboard() {
                             <div>
                                 {/* Toggle Buttons */}
                                 <button
-                                className={`tab-button ${mode === "Buy" ? "active" : ""}`}
+                                className={`dashboard-tab-button ${mode === "Buy" ? "active" : ""}`}
                                 onClick={() => setMode("Buy")}
                                 >
                                 Buy
                                 </button>
                                 <button
-                                className={`tab-button ${mode === "Sell" ? "active" : ""}`}
+                                className={`dashboard-tab-button ${mode === "Sell" ? "active" : ""}`}
                                 onClick={() => setMode("Sell")}
                                 >
                                 Sell
@@ -397,7 +396,7 @@ function Dashboard() {
                                     type="number"
                                     value={sellAmount}
                                     onChange={(e) => setSellAmount(e.target.value)}
-                                    className="home-search-bar" // Reusing your input styling
+                                    className="dashboard-search-bar"
                                     />
                                 </label>
                                 <p>Total Sale: ${totalSale}</p>
@@ -416,7 +415,7 @@ function Dashboard() {
                                     type="number"
                                     value={sellAmount}
                                     onChange={(e) => setSellAmount(e.target.value)}
-                                    className="home-search-bar" // Reusing your input styling
+                                    className="dashboard-search-bar" // Reusing your input styling
                                     />
                                 </label>
                                 <p>Total Sale: ${totalSale}</p>
