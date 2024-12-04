@@ -57,7 +57,7 @@ function Login() {
                         className="logo"
                     />
                     <div className="login-box">
-                        <h2>Log in</h2>
+                        <h2>Log In</h2>
                         <form onSubmit={handleSubmit}>
                             <div className="login-email">
                                 <label htmlFor="email" className="login-form-label">Username</label>

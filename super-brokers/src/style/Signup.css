@@ -116,12 +116,19 @@
 .signup-box h2 {
     text-align: center;
     margin-bottom: 20px;
+    font-family: "DM Serif Text", serif;
+    font-weight: 500;
+    font-style: normal;
+    text-align: center;
+    color: black;
 }
 
 .signup-form-label {
-    font-weight: 500;
     margin-bottom: 8px;
-    color: #333333; /* Dark grey for labels */
+    color: black; /* Dark grey for labels */
+    font-family: "Libre Baskerville", serif;
+    font-weight: 600;
+    font-style: normal;
 }
 
 .signup-username {
