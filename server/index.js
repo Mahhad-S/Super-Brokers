@@ -1,24 +1,40 @@
 const express = require('express');
+const path = require('path');
 const connectDB = require('./db');
 const cors = require('cors');
-const UserModel = require('./models/user');
-const path = require("path");
 const tradeRoutes = require('./routes/trades');
 const stockRoutes = require('./routes/stockRoutes');
 const newsRoutes = require('./routes/newsRoutes');
 const followRoutes = require('./routes/followRoutes');
-
 require('dotenv').config();
 
 const app = express();
 
 connectDB();
 
-app.use(express.json())
+app.use(express.json());
 app.use(cors({
-    origin: 'http://localhost:5173',  // Allow only this origin
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE'
+    origin: 'http://localhost:5173',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
 }));
+
+app.use('/api/trades', tradeRoutes);
+app.use('/api/stocks', stockRoutes);
+app.use('/api/news', newsRoutes);
+app.use('/api/follow', followRoutes);
+
+// Serve static files from the React app's build directory
+app.use(express.static(path.join(__dirname, '../super-brokers/dist')));
+
+// Fallback for React routing (ensure this is last)
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../super-brokers/dist', 'index.html'));
+});
+
+// Start the server
+app.listen(process.env.PORT || 3001, () => {
+    console.log("Server is running");
+});
 
 app.post("/login", async (req, res) => {
     const { email, password } = req.body;
@@ -74,29 +90,3 @@ app.post("/register", async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 });
-
-
-// Use the trade routes
-app.use('/api/trades', tradeRoutes); 
-
-// Use the stocks routes
-app.use('/api/stocks', stockRoutes);
-
-// Use the news routes
-app.use('/api/news', newsRoutes);
-
-// Use the follow routes
-app.use('/api/follow', followRoutes);
-
-// Serve static files from the React app's build directory
-app.use(express.static(path.join(__dirname, '../super-brokers/dist')));
-app.use('/images', express.static(path.join(__dirname, '../super-brokers/images')));
-
-// Handle React routing, return all requests to the React app
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../super-brokers/dist', 'index.html'));
-});
-
-app.listen(process.env.PORT || 3001, () => {
-    console.log("server is running")
-})

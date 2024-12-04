@@ -17,6 +17,9 @@ function Dashboard() {
     const [followedStocks, setFollowedStocks] = useState([]);
     const { userId } = useContext(AuthContext);
     const isFollowed = followedStocks.some((stock) => stock.symbol === stockData?.profile?.ticker);
+    const [mode, setMode] = useState("Buy");
+    const [transactionAmount, setTransactionAmount] = useState("");
+    const [positions, setPositions] = useState([]);
 
     // Fetch general market news on component mount
     useEffect(() => {
@@ -37,23 +40,24 @@ function Dashboard() {
     // Fetch followed stocks data for user
     useEffect(() => {
         const fetchFollowedStocks = async () => {
-            try {
-                if (!userId) {
-                    console.error("User ID not available");
-                    return;
-                }
-    
-                const response = await axios.get(`http://localhost:3001/api/follow/followed-stocks/${userId}`);
-                if (response.status === 200) {
-                    setFollowedStocks(response.data);
-                }
-            } catch (error) {
-                console.error("Error fetching followed stocks:", error);
+          try {
+            if (!userId) {
+              console.error("User ID not available");
+              return;
             }
+      
+            const response = await axios.get(`http://localhost:3001/api/follow/followed-stocks/${userId}`);
+            if (response.status === 200) {
+              setFollowedStocks(response.data);
+            }
+          } catch (error) {
+            console.error("Error fetching followed stocks:", error);
+            alert("Failed to fetch followed stocks. Please try again later.");
+          }
         };
-    
+      
         fetchFollowedStocks();
-    }, [userId]);
+      }, [userId]);
 
     // Fetch stock suggestions when the user presses "Enter"
     const handleKeyPress = async (e) => {
@@ -70,6 +74,34 @@ function Dashboard() {
         }
     };
 
+    // Fetch User's positions
+    useEffect(() => {
+        const fetchPositions = async () => {
+            try {
+                if (!userId) {
+                    console.error("User ID is not available. Ensure the user is logged in.");
+                    return;
+                }
+        
+                const apiUrl = `http://localhost:3001/api/user/portfolio/${userId}`;
+                console.log(`Fetching portfolio from: ${apiUrl}`);
+        
+                const response = await axios.get(apiUrl);
+                if (response.status === 200 && response.data?.portfolio) {
+                    console.log("Portfolio data retrieved successfully:", response.data.portfolio);
+                    setPositions(response.data.portfolio);
+                } else {
+                    console.error("Unexpected response format or missing portfolio data:", response.data);
+                    alert("Unable to fetch portfolio data. Please try again later.");
+                }
+            } catch (error) {
+                console.error("Error fetching user portfolio:", error.message);
+            }
+        };
+      
+        fetchPositions();
+    }, [userId]);
+          
     // Fetch stock details, price, and company-specific news when a symbol is selected
     const handleSearch = async (symbol) => {
         if (!symbol) return;
@@ -94,7 +126,35 @@ function Dashboard() {
             setStockPrice(null);
             setNewsArticles([]);
         }
-    };    
+    };
+    
+    // Function to handle buying and selling
+    const handleTransaction = async () => {
+        if (!userId) {
+          alert("You need to log in to perform this action.");
+          return;
+        }
+      
+        try {
+          const response = await axios.post('http://localhost:3001/api/trades/trade', {
+            userId,
+            stockSymbol: stockData?.profile?.ticker,
+            transactionType: mode.toLowerCase(),
+            quantity: parseFloat(transactionAmount),
+            transactionValue: stockPrice.c,
+          });
+      
+          if (response.status === 200) {
+            alert(`${mode} successful!`);
+            setTransactionAmount("");
+            // Update positions and virtual balance if needed
+            setPositions(response.data.portfolio); // Assuming the response includes the updated portfolio
+          }
+        } catch (error) {
+          console.error(`Error during ${mode.toLowerCase()} transaction:`, error);
+          alert(`Failed to complete ${mode.toLowerCase()} transaction. Please try again.`);
+        }
+      };
 
     // Function to start live stock price updates
     const startLiveUpdates = (symbol) => {
@@ -214,11 +274,27 @@ function Dashboard() {
                 <aside className="dashboard-sidebar-content">
                     <h3>Positions</h3>
                     <div className="dashboard-left-bubble">
-                        {/* Content for Positions can go here */}
+                        {positions && positions.length > 0 ? (
+                            positions.map((position) => (
+                                <div
+                                    key={position.stockSymbol}
+                                    className="followed-stock-item"
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={() => handleStockClick(position.stockSymbol)} // Navigate to stock details on click
+                                >
+                                    <span>{position.stockSymbol}</span>
+                                    <span>
+                                        ${position.averagePrice.toFixed(2)} ({position.quantity} shares)
+                                    </span>
+                                </div>
+                            ))
+                        ) : (
+                            <p>No positions to display</p>
+                        )}
                     </div>
                     <h3>Following</h3>
                     <div className="dashboard-left-bubble">
-                        {followedStocks.length > 0 ? (
+                        {followedStocks && followedStocks.length > 0 ? (
                             followedStocks.map((stock) => (
                                 <div
                                     key={stock.symbol}
@@ -248,7 +324,7 @@ function Dashboard() {
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 onKeyDown={handleKeyPress} // Trigger on "Enter" key press
                             />
-                            {suggestions.length > 0 && (
+                            {suggestions && suggestions.length > 0 && (
                                 <ul className="dropdown">
                                     {suggestions.map((item, index) => (
                                         <li key={index} onClick={() => handleSearch(item.symbol)}>
@@ -305,15 +381,29 @@ function Dashboard() {
                         </section>
                         <section className="dashboard-sub-right">
                             <div className="dashboard-buy-sell-panel">
-                                <div className="tab-button active">Buy</div>
-                                <div className="tab-button">Sell</div>
                                 <div>
-                                    <p>Curr. Price/Share: $x.xx</p>
-                                    <p>Buying Power (User): $x.xx</p>
-                                    <input type="number" placeholder="Buy Amount (Shares)" style={{ width: "100%", fontSize: "0.8rem" }} />
-                                    <p>Avg. Cost Per Share: $x.xx</p>
-                                    <p>Total Cost: $x.xx</p>
-                                    <button className="dashboard-purchase-button">Purchase</button>
+                                    <button className={`tab-button ${mode === "Buy" ? "active" : ""}`} onClick={() => setMode("Buy")}>
+                                        Buy
+                                    </button>
+                                    <button className={`tab-button ${mode === "Sell" ? "active" : ""}`} onClick={() => setMode("Sell")}>
+                                        Sell
+                                    </button>
+                                </div>
+                                <div>
+                                    <p>Curr. Price/Share: ${stockPrice?.c ?? "N/A"}</p>
+                                    <label>
+                                        {mode} Amount (Shares):
+                                        <input
+                                        type="number"
+                                        value={transactionAmount}
+                                        onChange={(e) => setTransactionAmount(e.target.value)}
+                                        className="home-search-bar"
+                                        />
+                                    </label>
+                                    <p>Total Cost: ${(transactionAmount * stockPrice?.c).toFixed(2)}</p>
+                                    <button className="dashboard-purchase-button" onClick={handleTransaction}>
+                                        {mode}
+                                    </button>
                                 </div>
                             </div>
                         </section>

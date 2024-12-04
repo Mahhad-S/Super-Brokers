@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const { getCompanyProfile, getStockPrice, getBasicFinancials, getStockSymbols, getSymbolLookup, } = require('../services/finnhubService');
 const { getAlphaVantageCandlestickData } = require('../services/alphaVantageService');
+const User = require('../models/user'); 
 
 // Endpoint to get company profile & basic financials by stock symbol
 router.get('/stock-info/:symbol', async (req, res) => {
@@ -63,6 +65,26 @@ router.get('/symbols', async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: 'Failed to retrieve stock symbols' });
     }
+});
+
+router.get('/user/portfolio/:userId', async (req, res) => {
+  const { userId } = req.params;
+  console.log(`Incoming request for user portfolio with ID: ${userId}`);
+
+  try {
+      // Convert userId to ObjectId
+      const user = await User.findById(mongoose.Types.ObjectId(userId));
+      if (!user) {
+          console.error(`User not found for ID: ${userId}`);
+          return res.status(404).json({ msg: 'User not found' });
+      }
+
+      console.log(`User portfolio fetched:`, user.portfolio);
+      res.status(200).json({ portfolio: user.portfolio });
+  } catch (error) {
+      console.error('Error fetching user portfolio:', error.message);
+      res.status(500).json({ msg: 'Server error' });
+  }
 });
 
 module.exports = router;
