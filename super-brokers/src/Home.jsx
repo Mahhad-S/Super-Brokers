@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import './style/Home.css';
 import { NavLink } from 'react-router-dom';
-import CandlestickChart from './CandlestickChart';
 import { AuthContext } from './context/AuthContext';
 
 function Home() {
@@ -13,7 +12,6 @@ function Home() {
     const [newsArticles, setNewsArticles] = useState([]);
     const [searchError, setSearchError] = useState(null);
     const [newsError, setNewsError] = useState(null);
-    const [candlestickData, setCandlestickData] = useState(null); // State for candlestick data
     const { isAuthenticated } = useContext(AuthContext);
 
     // Fetch general market news on component mount
@@ -31,24 +29,6 @@ function Home() {
 
         fetchMarketNews();
     }, []);
-
-    useEffect(() => {
-        const fetchCandlestickData = async () => {
-            if (!stockData || !stockData.profile || !stockData.profile.ticker) return;
-    
-            try {
-                const response = await fetch(`/api/alpha-vantage/candlestick-data?symbol=${stockData.profile.ticker}`);
-                if (!response.ok) throw new Error("Failed to fetch candlestick data");
-                const data = await response.json();
-                setCandlestickData(data);
-            } catch (error) {
-                console.error("Error fetching candlestick data:", error);
-                setCandlestickData(null); // Reset data to avoid rendering issues
-            }
-        };
-    
-        fetchCandlestickData();
-    }, [stockData]);
 
     // Fetch stock suggestions when the user presses "Enter"
     const handleKeyPress = async (e) => {
@@ -210,10 +190,6 @@ function Home() {
                                         >
                                             ${stockPrice.c} ({stockPrice.d > 0 ? '+' : ''}{stockPrice.dp}%)
                                         </span>
-                                    </div>
-
-                                    <div className="home-row-content">
-                                        {candlestickData && <CandlestickChart data={candlestickData} />}
                                     </div>
 
                                     <div className="home-row-content">

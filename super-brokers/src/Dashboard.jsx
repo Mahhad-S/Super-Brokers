@@ -2,7 +2,6 @@ import React from 'react';
 import { useState, useEffect, useContext } from "react";
 import axios from 'axios';
 import { NavLink } from 'react-router-dom';
-import CandlestickChart from './CandlestickChart';
 import { AuthContext } from "./context/AuthContext";
 import "./style/Dashboard.css";
 
@@ -14,7 +13,6 @@ function Dashboard() {
     const [newsArticles, setNewsArticles] = useState([]);
     const [searchError, setSearchError] = useState(null);
     const [newsError, setNewsError] = useState(null);
-    const [candlestickData, setCandlestickData] = useState(null); // State for candlestick data
     const { logout } = useContext(AuthContext);
     const [followedStocks, setFollowedStocks] = useState([]);
     const { userId } = useContext(AuthContext);
@@ -35,24 +33,6 @@ function Dashboard() {
 
         fetchMarketNews();
     }, []);
-
-    useEffect(() => {
-        const fetchCandlestickData = async () => {
-            if (!stockData || !stockData.profile || !stockData.profile.ticker) return;
-    
-            try {
-                const response = await fetch(`/api/alpha-vantage/candlestick-data?symbol=${stockData.profile.ticker}`);
-                if (!response.ok) throw new Error("Failed to fetch candlestick data");
-                const data = await response.json();
-                setCandlestickData(data);
-            } catch (error) {
-                console.error("Error fetching candlestick data:", error);
-                setCandlestickData(null); // Reset data to avoid rendering issues
-            }
-        };
-    
-        fetchCandlestickData();
-    }, [stockData]);
 
     // Fetch followed stocks data for user
     useEffect(() => {
@@ -100,9 +80,6 @@ function Dashboard() {
             const priceResponse = await axios.get(`http://localhost:3001/api/stocks/stock-price/${symbol}`);
             setStockPrice(priceResponse.data);
     
-            const candlestickResponse = await axios.get(`http://localhost:3001/api/stocks/candlestick/${symbol}`);
-            setCandlestickData(candlestickResponse.data);
-    
             const newsResponse = await axios.get(`http://localhost:3001/api/news/company-news/${symbol}`);
             const randomNews = newsResponse.data.sort(() => 0.5 - Math.random()).slice(0, 3);
             setNewsArticles(randomNews);
@@ -115,7 +92,6 @@ function Dashboard() {
             setSearchError('Failed to fetch stock information or candlestick data. Please try again.');
             setStockData(null);
             setStockPrice(null);
-            setCandlestickData(null);
             setNewsArticles([]);
         }
     };    
@@ -167,33 +143,36 @@ function Dashboard() {
 
     // Follow & Unfollow button function
     const handleFollowUnfollow = async () => {
+        if (!userId) {
+            console.error("User ID not available");
+            alert("You need to log in to follow/unfollow stocks.");
+            return;
+        }
+
         try {
-            if (!userId) {
-                console.error("User ID not available");
-                alert("You need to log in to follow/unfollow stocks.");
-                return;
-            }
-    
             if (isFollowed) {
-                await axios.delete(`http://localhost:3001/api/follow/unfollow/${userId}`, {
+                // Unfollow stock
+                const response = await axios.delete(`http://localhost:3001/api/follow/unfollow/${userId}`, {
                     data: { symbol: stockData.profile.ticker },
                 });
-                setFollowedStocks((prev) =>
-                    prev.filter((stock) => stock.symbol !== stockData.profile.ticker)
-                );
-                alert("Stock unfollowed successfully!");
+                if (response.status === 200) {
+                    setFollowedStocks(prev => prev.filter(stock => stock.symbol !== stockData.profile.ticker));
+                    alert("Stock unfollowed successfully!");
+                }
             } else {
-                await axios.post(`http://localhost:3001/api/follow/follow/${userId}`, {
-                    symbol: stockData.profile.ticker,
+                // Follow stock
+                const response = await axios.post(`http://localhost:3001/api/follow/follow`, {
+                    _id: userId,
+                    stockSymbol: stockData.profile.ticker,
                 });
-                setFollowedStocks((prev) => [
-                    ...prev,
-                    { symbol: stockData.profile.ticker, price: stockPrice.c },
-                ]);
-                alert("Stock added to followed list!");
+                if (response.status === 200) {
+                    setFollowedStocks(prev => [...prev, { symbol: stockData.profile.ticker, price: stockPrice.c }]);
+                    alert("Stock added to followed list!");
+                }
             }
         } catch (error) {
             console.error("Error toggling follow/unfollow:", error);
+            alert("Failed to toggle follow/unfollow. Please try again later.");
         }
     };
 
@@ -296,10 +275,6 @@ function Dashboard() {
                                     <button onClick={handleFollowUnfollow}>
                                         {isFollowed ? 'Unfollow' : 'Follow'}
                                     </button>
-
-                                    <div className="home-row-content">
-                                        {candlestickData && <CandlestickChart data={candlestickData} />}
-                                    </div>
 
                                     <div className="home-row-content">
                                         <p>High Price (Day): ${stockPrice.h}</p>
