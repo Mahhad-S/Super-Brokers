@@ -94,4 +94,15 @@ router.post('/trade', async (req, res) => {
   }
 });
 
+router.get('/user/:userId', async (req, res) => {
+  const { userId } = req.params;
+  try {
+      const trades = await Trade.find({ userId }).sort({ date: -1 });
+      res.status(200).json({ trades });
+  } catch (error) {
+      console.error('Error fetching trade history:', error);
+      res.status(500).json({ msg: 'Server error' });
+  }
+});
+
 module.exports = router;
