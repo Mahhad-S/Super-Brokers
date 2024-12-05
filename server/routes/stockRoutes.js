@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const { getCompanyProfile, getStockPrice, getBasicFinancials, getStockSymbols, getSymbolLookup, } = require('../services/finnhubService');
-//const { getAlphaVantageCandlestickData } = require('../services/alphaVantageService');
+const { getAlphaVantageCandlestickData } = require('../services/alphaVantageService');
+const User = require('../models/user'); 
 
 // Endpoint to get company profile & basic financials by stock symbol
 router.get('/stock-info/:symbol', async (req, res) => {
@@ -65,21 +67,33 @@ router.get('/symbols', async (req, res) => {
     }
 });
 
-/*
-router.get('/candlestick/:symbol', async (req, res) => {
-  const { symbol } = req.params;
-
-  try {
-      // Fetch candlestick data
-      const candlestickData = await getAlphaVantageCandlestickData(symbol);
-
-      // Send data back to the client
-      res.status(200).json(candlestickData);
-  } catch (error) {
-      console.error('Error fetching candlestick data:', error.message);
-      res.status(500).json({ message: 'Server error while fetching candlestick data.' });
-  }
+router.get('/user/portfolio/:userId', async (req, res) => {
+    const { userId } = req.params;
+    console.log(`Incoming request for user portfolio with ID: ${userId}`);
+  
+    try {
+        // Validate if userId is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            console.error(`Invalid user ID format: ${userId}`);
+            return res.status(400).json({ msg: 'Invalid user ID format' });
+        }
+  
+        // Use new keyword to instantiate ObjectId properly
+        const user = await User.findById(new mongoose.Types.ObjectId(userId));
+        if (!user) {
+            console.error(`User not found for ID: ${userId}`);
+            return res.status(404).json({ msg: 'User not found' });
+        }
+  
+        console.log(`User portfolio fetched successfully:`, user.portfolio);
+        res.status(200).json({ 
+            portfolio: user.portfolio,
+            virtualBalance: user.virtualBalance // Include virtual balance in the response
+        });
+    } catch (error) {
+        console.error('Error fetching user portfolio:', error);
+        res.status(500).json({ msg: 'Server error' });
+    }
 });
-*/
 
 module.exports = router;

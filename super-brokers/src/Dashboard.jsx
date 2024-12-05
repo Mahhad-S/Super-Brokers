@@ -2,7 +2,6 @@ import React from 'react';
 import { useState, useEffect, useContext, useRef } from "react";
 import axios from 'axios';
 import { NavLink } from 'react-router-dom';
-//import CandlestickChart from './CandlestickChart';
 import { AuthContext } from "./context/AuthContext";
 import "./style/Dashboard.css";
 
@@ -15,7 +14,6 @@ function Dashboard() {
     const [newsArticles, setNewsArticles] = useState([]);
     const [searchError, setSearchError] = useState(null);
     const [newsError, setNewsError] = useState(null);
-    const [candlestickData, setCandlestickData] = useState(null); // State for candlestick data
     const { logout } = useContext(AuthContext);
     const searchRef = useRef(null);
     const [mode, setMode] = useState("Buy"); // Active mode: Buy or Sell
@@ -26,6 +24,10 @@ function Dashboard() {
     const [followedStocks, setFollowedStocks] = useState([]);
     const { userId } = useContext(AuthContext);
     const isFollowed = followedStocks.some((stock) => stock.symbol === stockData?.profile?.ticker);
+    const [transactionAmount, setTransactionAmount] = useState("");
+    const [positions, setPositions] = useState([]);
+    const [currentSharesHeld, setCurrentSharesHeld] = useState(0);
+    const [virtualBalance, setVirtualBalance] = useState(0);
 
     // Fetch general market news on component mount
     useEffect(() => {
@@ -42,47 +44,33 @@ function Dashboard() {
 
         fetchMarketNews();
     }, []);
-
-    /* Candlestick Related
+    
+    // Fetch default stock (SPY)
     useEffect(() => {
-        const fetchCandlestickData = async () => {
-            if (!stockData || !stockData.profile || !stockData.profile.ticker) return;
-    
-            try {
-                const response = await fetch(`/api/alpha-vantage/candlestick-data?symbol=${stockData.profile.ticker}`);
-                if (!response.ok) throw new Error("Failed to fetch candlestick data");
-                const data = await response.json();
-                setCandlestickData(data);
-            } catch (error) {
-                console.error("Error fetching candlestick data:", error);
-                setCandlestickData(null); // Reset data to avoid rendering issues
-            }
-        };
-    
-        fetchCandlestickData();
-    }, [stockData]);
-    */
+        handleSearch('AAPL');
+    }, []);
 
     // Fetch followed stocks data for user
     useEffect(() => {
         const fetchFollowedStocks = async () => {
-            try {
-                if (!userId) {
-                    console.error("User ID not available");
-                    return;
-                }
-    
-                const response = await axios.get(`http://localhost:3001/api/follow/followed-stocks/${userId}`);
-                if (response.status === 200) {
-                    setFollowedStocks(response.data);
-                }
-            } catch (error) {
-                console.error("Error fetching followed stocks:", error);
+          try {
+            if (!userId) {
+              console.error("User ID not available");
+              return;
             }
+      
+            const response = await axios.get(`http://localhost:3001/api/follow/followed-stocks/${userId}`);
+            if (response.status === 200) {
+              setFollowedStocks(response.data);
+            }
+          } catch (error) {
+            console.error("Error fetching followed stocks:", error);
+            alert("Failed to fetch followed stocks. Please try again later.");
+          }
         };
-    
+      
         fetchFollowedStocks();
-    }, [userId]);
+      }, [userId]);
 
     // Fetch stock suggestions when the user presses "Enter"
     const handleKeyPress = async (e) => {
@@ -99,20 +87,51 @@ function Dashboard() {
         }
     };
 
-    // Close dropdown on outside click
+    // Fetch User's positions
     useEffect(() => {
-        const handleClickOutside = (e) => {
-            if (!document.querySelector('.dashboard-search-bar-container')?.contains(e.target)) {
-                setSuggestions([]);
+        const fetchPositions = async () => {
+            try {
+                if (!userId) {
+                    console.error("User ID is not available. Ensure the user is logged in.");
+                    return;
+                }
+    
+                const apiUrl = `http://localhost:3001/api/stocks/user/portfolio/${userId}`;
+                console.log(`Fetching portfolio from: ${apiUrl}`);
+    
+                const response = await axios.get(apiUrl);
+                if (response.status === 200 && response.data?.portfolio) {
+                    const portfolioData = response.data.portfolio;
+    
+                    // Set user's virtual balance
+                    setVirtualBalance(response.data.virtualBalance); // Now this should be properly fetched and set
+    
+                    // Fetch the real-time price and percent change for each stock
+                    const updatedPositions = await Promise.all(portfolioData.map(async (position) => {
+                        const stockPriceResponse = await axios.get(`http://localhost:3001/api/stocks/stock-price/${position.stockSymbol}`);
+                        if (stockPriceResponse.status === 200) {
+                            const { dp } = stockPriceResponse.data; // Get the percent change (dp)
+                            return { ...position, changePercent: dp }; // Add percent change to the position data
+                        } else {
+                            return position; // If fetching fails, just return the original position data
+                        }
+                    }));
+    
+                    setPositions(updatedPositions);
+                } else {
+                    console.error("Unexpected response format or missing portfolio data:", response.data);
+                    alert("Unable to fetch portfolio data. Please try again later.");
+                }
+            } catch (error) {
+                console.error("Error fetching user portfolio:", error.message);
             }
         };
     
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
-
+        if (userId) {
+            fetchPositions();
+        }
+    }, [userId]);
+          
     // Fetch stock details, price, and company-specific news when a symbol is selected
     const handleSearch = async (symbol) => {
         if (!symbol) return;
@@ -123,9 +142,11 @@ function Dashboard() {
             const priceResponse = await axios.get(`http://localhost:3001/api/stocks/stock-price/${symbol}`);
             setStockPrice(priceResponse.data);
     
-            //const candlestickResponse = await axios.get(`http://localhost:3001/api/stocks/candlestick/${symbol}`);
-            //setCandlestickData(candlestickResponse.data);
+            // Update shares held
+            const foundPosition = positions.find((position) => position.stockSymbol === symbol);
+            setCurrentSharesHeld(foundPosition ? foundPosition.quantity : 0);
     
+            // Fetch news for the company
             const newsResponse = await axios.get(`http://localhost:3001/api/news/company-news/${symbol}`);
             const randomNews = newsResponse.data.sort(() => 0.5 - Math.random()).slice(0, 3);
             setNewsArticles(randomNews);
@@ -139,10 +160,57 @@ function Dashboard() {
             setSearchError('Failed to fetch stock information or candlestick data. Please try again.');
             setStockData(null);
             setStockPrice(null);
-            setCandlestickData(null);
             setNewsArticles([]);
         }
-    };    
+    };
+    
+    // Function to handle buying and selling
+    const handleTransaction = async () => {
+        if (!userId) {
+            alert("You need to log in to perform this action.");
+            return;
+        }
+    
+        const quantity = parseFloat(mode === "Buy" ? transactionAmount : sellAmount);
+        if (!quantity || quantity <= 0) {
+            alert("Please enter a valid amount of shares.");
+            return;
+        }
+    
+        try {
+            const response = await axios.post('http://localhost:3001/api/trades/trade', {
+                userId,
+                stockSymbol: stockData?.profile?.ticker,
+                transactionType: mode.toLowerCase(),
+                quantity,
+                transactionValue: stockPrice.c, // Use the current price per share
+            });
+    
+            if (response.status === 200) {
+                alert(`${mode} successful!`);
+                setTransactionAmount("");
+                setSellAmount("");
+    
+                // Update the user's portfolio and virtual balance with the response data
+                if (response.data && response.data.portfolio && response.data.virtualBalance !== undefined) {
+                    setPositions(response.data.portfolio); // Set updated portfolio
+                    setVirtualBalance(response.data.virtualBalance); // Set updated virtual balance
+    
+                    // Update shares held for the current stock
+                    const foundPosition = response.data.portfolio.find(
+                        (position) => position.stockSymbol === stockData?.profile?.ticker
+                    );
+                    setCurrentSharesHeld(foundPosition ? foundPosition.quantity : 0);
+                } else {
+                    console.error("Portfolio or virtual balance data is missing from response.");
+                    setCurrentSharesHeld(0);
+                }
+            }
+        } catch (error) {
+            console.error(`Error during ${mode.toLowerCase()} transaction:`, error);
+            alert(`Failed to complete ${mode.toLowerCase()} transaction. Please try again.`);
+        }
+    };
 
     // Function to start live stock price updates
     const startLiveUpdates = (symbol) => {
@@ -191,33 +259,36 @@ function Dashboard() {
 
     // Follow & Unfollow button function
     const handleFollowUnfollow = async () => {
+        if (!userId) {
+            console.error("User ID not available");
+            alert("You need to log in to follow/unfollow stocks.");
+            return;
+        }
+
         try {
-            if (!userId) {
-                console.error("User ID not available");
-                alert("You need to log in to follow/unfollow stocks.");
-                return;
-            }
-    
             if (isFollowed) {
-                await axios.delete(`http://localhost:3001/api/follow/unfollow/${userId}`, {
+                // Unfollow stock
+                const response = await axios.delete(`http://localhost:3001/api/follow/unfollow/${userId}`, {
                     data: { symbol: stockData.profile.ticker },
                 });
-                setFollowedStocks((prev) =>
-                    prev.filter((stock) => stock.symbol !== stockData.profile.ticker)
-                );
-                alert("Stock unfollowed successfully!");
+                if (response.status === 200) {
+                    setFollowedStocks(prev => prev.filter(stock => stock.symbol !== stockData.profile.ticker));
+                    alert("Stock unfollowed successfully!");
+                }
             } else {
-                await axios.post(`http://localhost:3001/api/follow/follow/${userId}`, {
-                    symbol: stockData.profile.ticker,
+                // Follow stock
+                const response = await axios.post(`http://localhost:3001/api/follow/follow`, {
+                    _id: userId,
+                    stockSymbol: stockData.profile.ticker,
                 });
-                setFollowedStocks((prev) => [
-                    ...prev,
-                    { symbol: stockData.profile.ticker, price: stockPrice.c },
-                ]);
-                alert("Stock added to followed list!");
+                if (response.status === 200) {
+                    setFollowedStocks(prev => [...prev, { symbol: stockData.profile.ticker, price: stockPrice.c }]);
+                    alert("Stock added to followed list!");
+                }
             }
         } catch (error) {
             console.error("Error toggling follow/unfollow:", error);
+            alert("Failed to toggle follow/unfollow. Please try again later.");
         }
     };
 
@@ -259,11 +330,29 @@ function Dashboard() {
                 <aside className="dashboard-sidebar-content">
                     <h3>Positions</h3>
                     <div className="dashboard-left-bubble">
-                        {/* Content for Positions can go here */}
+                    {positions && positions.length > 0 ? (
+                        positions.map((position) => (
+                            <div
+                                key={position.stockSymbol}
+                                className="followed-stock-item"
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => handleStockClick(position.stockSymbol)}
+                            >
+                                <span>{position.stockSymbol}   </span>
+                                <span>
+                                    {position.changePercent !== undefined
+                                        ? `${position.changePercent > 0 ? '+' : ''}${position.changePercent.toFixed(2)}%`
+                                        : 'N/A'}
+                                </span>
+                            </div>
+                        ))
+                    ) : (
+                        <p>No positions to display</p>
+                    )}
                     </div>
                     <h3>Following</h3>
                     <div className="dashboard-left-bubble">
-                        {followedStocks.length > 0 ? (
+                        {followedStocks && followedStocks.length > 0 ? (
                             followedStocks.map((stock) => (
                                 <div
                                     key={stock.symbol}
@@ -372,57 +461,59 @@ function Dashboard() {
                             <div>
                                 {/* Toggle Buttons */}
                                 <button
-                                className={`dashboard-tab-button ${mode === "Buy" ? "active" : ""}`}
-                                onClick={() => setMode("Buy")}
+                                    className={`dashboard-tab-button ${mode === "Buy" ? "active" : ""}`}
+                                    onClick={() => setMode("Buy")}
                                 >
-                                Buy
+                                    Buy
                                 </button>
                                 <button
-                                className={`dashboard-tab-button ${mode === "Sell" ? "active" : ""}`}
-                                onClick={() => setMode("Sell")}
+                                    className={`dashboard-tab-button ${mode === "Sell" ? "active" : ""}`}
+                                    onClick={() => setMode("Sell")}
                                 >
-                                Sell
+                                    Sell
                                 </button>
                             </div>
+
+                            {/* Display the user's current virtual balance */}
+                            <p>Buying Power: ${virtualBalance != null ? virtualBalance.toFixed(2) : 'Loading...'}</p>
 
                             {/* Sell Mode Panel */}
                             {mode === "Sell" && (
                                 <div>
-                                <p>Curr. Price/Share: ${currentPrice}</p>
-                                <p>Shares Held: {sharesHeld} Shares</p>
-                                <label>
-                                    Sell Amount (Shares):
-                                    <input
-                                    type="number"
-                                    value={sellAmount}
-                                    onChange={(e) => setSellAmount(e.target.value)}
-                                    className="dashboard-search-bar"
-                                    />
-                                </label>
-                                <p>Total Sale: ${totalSale}</p>
-                                <button className="dashboard-purchase-button">Sell</button>
+                                    <p>Curr. Price/Share: ${stockPrice?.c ?? 'N/A'}</p>
+                                    <p>Shares Held: {currentSharesHeld} Shares</p>
+                                    <label>
+                                        Sell Amount (Shares):
+                                        <input
+                                            type="number"
+                                            value={sellAmount}
+                                            onChange={(e) => setSellAmount(e.target.value)}
+                                            className="dashboard-search-bar"
+                                        />
+                                    </label>
+                                    <p>Total Sale: ${sellAmount ? (sellAmount * stockPrice.c).toFixed(2) : "0.00"}</p>
+                                    <button className="dashboard-purchase-button" onClick={handleTransaction}>Sell</button>
                                 </div>
                             )}
 
-                            {/* Buy Mode Panel Placeholder */}
+                            {/* Buy Mode Panel */}
                             {mode === "Buy" && (
                                 <div>
-                                <p>Curr. Price/Share: ${currentPrice}</p>
-                                <p>Shares Held: {sharesHeld} Shares</p>
-                                <label>
-                                    Buy Amount (Shares):
-                                    <input
-                                    type="number"
-                                    value={sellAmount}
-                                    onChange={(e) => setSellAmount(e.target.value)}
-                                    className="dashboard-search-bar" // Reusing your input styling
-                                    />
-                                </label>
-                                <p>Total Sale: ${totalSale}</p>
-                                <button className="dashboard-purchase-button">Buy</button>
+                                    <p>Curr. Price/Share: ${stockPrice?.c ?? 'N/A'}</p>
+                                    <label>
+                                        Buy Amount (Shares):
+                                        <input
+                                            type="number"
+                                            value={transactionAmount}
+                                            onChange={(e) => setTransactionAmount(e.target.value)}
+                                            className="dashboard-search-bar" 
+                                        />
+                                    </label>
+                                    <p>Total Purchase: ${transactionAmount && stockPrice?.c != null ? (transactionAmount * stockPrice.c).toFixed(2) : "0.00"}</p>
+                                    <button className="dashboard-purchase-button" onClick={handleTransaction}>Buy</button>
                                 </div>
                             )}
-                            </div>
+                        </div>
                         </section>
                     </section>
 

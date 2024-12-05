@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import axios from 'axios';
 import { NavLink } from 'react-router-dom';
-//import CandlestickChart from './CandlestickChart';
 import { AuthContext } from './context/AuthContext';
 import './style/Home.css';
 
@@ -13,7 +12,6 @@ function Home() {
     const [newsArticles, setNewsArticles] = useState([]);
     const [searchError, setSearchError] = useState(null);
     const [newsError, setNewsError] = useState(null);
-    const [candlestickData, setCandlestickData] = useState(null); // State for candlestick data
     const { isAuthenticated } = useContext(AuthContext);
     const [showDropdown, setShowDropdown] = useState(false);
     const searchRef = useRef(null); // Ref to detect clicks outside
@@ -32,37 +30,6 @@ function Home() {
         };
 
         fetchMarketNews();
-    }, []);
-
-    /*
-    const fetchCandlestickData = async (symbol) => {
-        try {
-            const response = await axios.get(`http://localhost:3001/api/stocks/candlestick/${symbol}`);
-            setCandlestickData(response.data);
-        } catch (error) {
-            console.error('Error fetching candlestick data:', error.message);
-        }
-    };
-
-    useEffect(() => {
-        if (stockData && stockData.profile && stockData.profile.ticker) {
-            fetchCandlestickData(stockData.profile.ticker);
-        }
-    }, [stockData]);
-    */
-
-    // Close dropdown if clicked outside
-    useEffect(() => {
-        const handleClickOutside = (e) => {
-            if (!document.querySelector('.home-search-bar-container')?.contains(e.target)) {
-                setSuggestions([]);
-            }
-        };
-        
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
     }, []);
 
     // Fetch stock suggestions when the user presses "Enter"

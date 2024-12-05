@@ -29,7 +29,8 @@ router.post('/trade', async (req, res) => {
           // Update existing stock in portfolio
           const existingStock = user.portfolio[stockIndex];
           const newTotalQuantity = existingStock.quantity + quantity;
-          const newAveragePrice = ((existingStock.quantity * existingStock.averagePrice) + totalValue) / newTotalQuantity;
+          const newAveragePrice = 
+            ((existingStock.quantity * existingStock.averagePrice) + totalValue) / newTotalQuantity;
 
           user.portfolio[stockIndex].quantity = newTotalQuantity;
           user.portfolio[stockIndex].averagePrice = newAveragePrice;
@@ -80,10 +81,27 @@ router.post('/trade', async (req, res) => {
     user.tradeHistory.push(newTrade._id);
     await user.save();
 
-    res.json({ msg: 'Trade successful', trade: newTrade, virtualBalance: user.virtualBalance });
+    // Return updated portfolio and virtual balance along with trade details
+    res.json({ 
+      msg: 'Trade successful', 
+      trade: newTrade, 
+      virtualBalance: user.virtualBalance, 
+      portfolio: user.portfolio 
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send('Server error');
+  }
+});
+
+router.get('/user/:userId', async (req, res) => {
+  const { userId } = req.params;
+  try {
+      const trades = await Trade.find({ userId }).sort({ date: -1 });
+      res.status(200).json({ trades });
+  } catch (error) {
+      console.error('Error fetching trade history:', error);
+      res.status(500).json({ msg: 'Server error' });
   }
 });
 

@@ -81,16 +81,19 @@ router.get('/followed-stocks/:id', async (req, res) => {
         return { symbol, price: price.c }; // Return price if API succeeds
       } catch (error) {
         console.error(`Error fetching price for ${symbol}:`, error.message);
-        return { symbol, price: null };
+        return { symbol, price: null }; // Return null for price if fetching fails
       }
     });
 
     const stockPrices = await Promise.all(pricesPromises);
 
-    // Sort alphabetically by symbol
-    stockPrices.sort((a, b) => a.symbol.localeCompare(b.symbol));
+    // Filter out any stocks with null symbols or missing prices
+    const validStockPrices = stockPrices.filter(stock => stock.symbol !== null && stock.price !== null);
 
-    res.json(stockPrices);
+    // Sort alphabetically by symbol, after filtering out invalid entries
+    validStockPrices.sort((a, b) => a.symbol.localeCompare(b.symbol));
+
+    res.json(validStockPrices);
   } catch (err) {
     console.error('Error in followed-stocks endpoint:', err.message);
     res.status(500).json({ msg: 'Server error' });

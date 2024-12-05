@@ -23,18 +23,19 @@ function Signup() {
             return;
         }
     
+        console.log({ username, email, password }); // Debugging step
+    
         axios.post('http://localhost:3001/register', { username, email, password })
             .then(result => {
-                console.log(result);
                 if (result.status === 201) {
                     navigate("/login");
                 } else {
-                    alert(result.data.message); // Show error message
+                    alert(result.data.message);
                 }
             })
             .catch(err => {
-                console.log(err);
-                alert(err.response?.data?.message || 'An error occurred'); // Show error message
+                console.error(err);
+                alert(err.response?.data?.message || 'An error occurred');
             });
     };
 
