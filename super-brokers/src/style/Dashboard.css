@@ -136,11 +136,11 @@ body, html {
 }
 
 .dashboard-left-bubble {
-    background-color: #f8f9fa;
+    background-color: #171515;
     border-radius: 10px;
     padding: 10px;
     margin-bottom: 20px;
-    border: 1px solid #ddd;
+    border: 1px solid #171515;
     min-width: 100px;
     min-height: 180px;
     text-align: center;

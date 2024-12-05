@@ -29,7 +29,8 @@ router.post('/trade', async (req, res) => {
           // Update existing stock in portfolio
           const existingStock = user.portfolio[stockIndex];
           const newTotalQuantity = existingStock.quantity + quantity;
-          const newAveragePrice = ((existingStock.quantity * existingStock.averagePrice) + totalValue) / newTotalQuantity;
+          const newAveragePrice = 
+            ((existingStock.quantity * existingStock.averagePrice) + totalValue) / newTotalQuantity;
 
           user.portfolio[stockIndex].quantity = newTotalQuantity;
           user.portfolio[stockIndex].averagePrice = newAveragePrice;
@@ -80,7 +81,13 @@ router.post('/trade', async (req, res) => {
     user.tradeHistory.push(newTrade._id);
     await user.save();
 
-    res.json({ msg: 'Trade successful', trade: newTrade, virtualBalance: user.virtualBalance });
+    // Return updated portfolio and virtual balance along with trade details
+    res.json({ 
+      msg: 'Trade successful', 
+      trade: newTrade, 
+      virtualBalance: user.virtualBalance, 
+      portfolio: user.portfolio 
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send('Server error');

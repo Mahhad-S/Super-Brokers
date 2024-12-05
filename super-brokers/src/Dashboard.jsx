@@ -26,6 +26,8 @@ function Dashboard() {
     const isFollowed = followedStocks.some((stock) => stock.symbol === stockData?.profile?.ticker);
     const [transactionAmount, setTransactionAmount] = useState("");
     const [positions, setPositions] = useState([]);
+    const [currentSharesHeld, setCurrentSharesHeld] = useState(0);
+    const [virtualBalance, setVirtualBalance] = useState(0);
 
     // Fetch general market news on component mount
     useEffect(() => {
@@ -41,6 +43,11 @@ function Dashboard() {
         };
 
         fetchMarketNews();
+    }, []);
+    
+    // Fetch default stock (SPY)
+    useEffect(() => {
+        handleSearch('AAPL');
     }, []);
 
     // Fetch followed stocks data for user
@@ -86,17 +93,31 @@ function Dashboard() {
             try {
                 if (!userId) {
                     console.error("User ID is not available. Ensure the user is logged in.");
-                    return; // Exit early if userId is not available
+                    return;
                 }
-        
+    
                 const apiUrl = `http://localhost:3001/api/stocks/user/portfolio/${userId}`;
                 console.log(`Fetching portfolio from: ${apiUrl}`);
-        
+    
                 const response = await axios.get(apiUrl);
-                console.log("API Response:", response); // <-- Log response to check its structure
                 if (response.status === 200 && response.data?.portfolio) {
-                    console.log("Portfolio data retrieved successfully:", response.data.portfolio);
-                    setPositions(response.data.portfolio);
+                    const portfolioData = response.data.portfolio;
+    
+                    // Set user's virtual balance
+                    setVirtualBalance(response.data.virtualBalance); // Now this should be properly fetched and set
+    
+                    // Fetch the real-time price and percent change for each stock
+                    const updatedPositions = await Promise.all(portfolioData.map(async (position) => {
+                        const stockPriceResponse = await axios.get(`http://localhost:3001/api/stocks/stock-price/${position.stockSymbol}`);
+                        if (stockPriceResponse.status === 200) {
+                            const { dp } = stockPriceResponse.data; // Get the percent change (dp)
+                            return { ...position, changePercent: dp }; // Add percent change to the position data
+                        } else {
+                            return position; // If fetching fails, just return the original position data
+                        }
+                    }));
+    
+                    setPositions(updatedPositions);
                 } else {
                     console.error("Unexpected response format or missing portfolio data:", response.data);
                     alert("Unable to fetch portfolio data. Please try again later.");
@@ -106,7 +127,6 @@ function Dashboard() {
             }
         };
     
-        // Fetch positions only if userId is defined
         if (userId) {
             fetchPositions();
         }
@@ -122,6 +142,11 @@ function Dashboard() {
             const priceResponse = await axios.get(`http://localhost:3001/api/stocks/stock-price/${symbol}`);
             setStockPrice(priceResponse.data);
     
+            // Update shares held
+            const foundPosition = positions.find((position) => position.stockSymbol === symbol);
+            setCurrentSharesHeld(foundPosition ? foundPosition.quantity : 0);
+    
+            // Fetch news for the company
             const newsResponse = await axios.get(`http://localhost:3001/api/news/company-news/${symbol}`);
             const randomNews = newsResponse.data.sort(() => 0.5 - Math.random()).slice(0, 3);
             setNewsArticles(randomNews);
@@ -142,30 +167,50 @@ function Dashboard() {
     // Function to handle buying and selling
     const handleTransaction = async () => {
         if (!userId) {
-          alert("You need to log in to perform this action.");
-          return;
+            alert("You need to log in to perform this action.");
+            return;
         }
-      
+    
+        const quantity = parseFloat(mode === "Buy" ? transactionAmount : sellAmount);
+        if (!quantity || quantity <= 0) {
+            alert("Please enter a valid amount of shares.");
+            return;
+        }
+    
         try {
-          const response = await axios.post('http://localhost:3001/api/trades/trade', {
-            userId,
-            stockSymbol: stockData?.profile?.ticker,
-            transactionType: mode.toLowerCase(),
-            quantity: parseFloat(transactionAmount),
-            transactionValue: stockPrice.c,
-          });
-      
-          if (response.status === 200) {
-            alert(`${mode} successful!`);
-            setTransactionAmount("");
-            // Update positions and virtual balance if needed
-            setPositions(response.data.portfolio); // Assuming the response includes the updated portfolio
-          }
+            const response = await axios.post('http://localhost:3001/api/trades/trade', {
+                userId,
+                stockSymbol: stockData?.profile?.ticker,
+                transactionType: mode.toLowerCase(),
+                quantity,
+                transactionValue: stockPrice.c, // Use the current price per share
+            });
+    
+            if (response.status === 200) {
+                alert(`${mode} successful!`);
+                setTransactionAmount("");
+                setSellAmount("");
+    
+                // Update the user's portfolio and virtual balance with the response data
+                if (response.data && response.data.portfolio && response.data.virtualBalance !== undefined) {
+                    setPositions(response.data.portfolio); // Set updated portfolio
+                    setVirtualBalance(response.data.virtualBalance); // Set updated virtual balance
+    
+                    // Update shares held for the current stock
+                    const foundPosition = response.data.portfolio.find(
+                        (position) => position.stockSymbol === stockData?.profile?.ticker
+                    );
+                    setCurrentSharesHeld(foundPosition ? foundPosition.quantity : 0);
+                } else {
+                    console.error("Portfolio or virtual balance data is missing from response.");
+                    setCurrentSharesHeld(0);
+                }
+            }
         } catch (error) {
-          console.error(`Error during ${mode.toLowerCase()} transaction:`, error);
-          alert(`Failed to complete ${mode.toLowerCase()} transaction. Please try again.`);
+            console.error(`Error during ${mode.toLowerCase()} transaction:`, error);
+            alert(`Failed to complete ${mode.toLowerCase()} transaction. Please try again.`);
         }
-      };
+    };
 
     // Function to start live stock price updates
     const startLiveUpdates = (symbol) => {
@@ -285,23 +330,25 @@ function Dashboard() {
                 <aside className="dashboard-sidebar-content">
                     <h3>Positions</h3>
                     <div className="dashboard-left-bubble">
-                        {positions && positions.length > 0 ? (
-                            positions.map((position) => (
-                                <div
-                                    key={position.stockSymbol}
-                                    className="followed-stock-item"
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={() => handleStockClick(position.stockSymbol)} // Navigate to stock details on click
-                                >
-                                    <span>{position.stockSymbol}</span>
-                                    <span>
-                                        ${position.averagePrice.toFixed(2)} ({position.quantity} shares)
-                                    </span>
-                                </div>
-                            ))
-                        ) : (
-                            <p>No positions to display</p>
-                        )}
+                    {positions && positions.length > 0 ? (
+                        positions.map((position) => (
+                            <div
+                                key={position.stockSymbol}
+                                className="followed-stock-item"
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => handleStockClick(position.stockSymbol)}
+                            >
+                                <span>{position.stockSymbol}   </span>
+                                <span>
+                                    {position.changePercent !== undefined
+                                        ? `${position.changePercent > 0 ? '+' : ''}${position.changePercent.toFixed(2)}%`
+                                        : 'N/A'}
+                                </span>
+                            </div>
+                        ))
+                    ) : (
+                        <p>No positions to display</p>
+                    )}
                     </div>
                     <h3>Following</h3>
                     <div className="dashboard-left-bubble">
@@ -414,57 +461,59 @@ function Dashboard() {
                             <div>
                                 {/* Toggle Buttons */}
                                 <button
-                                className={`dashboard-tab-button ${mode === "Buy" ? "active" : ""}`}
-                                onClick={() => setMode("Buy")}
+                                    className={`dashboard-tab-button ${mode === "Buy" ? "active" : ""}`}
+                                    onClick={() => setMode("Buy")}
                                 >
-                                Buy
+                                    Buy
                                 </button>
                                 <button
-                                className={`dashboard-tab-button ${mode === "Sell" ? "active" : ""}`}
-                                onClick={() => setMode("Sell")}
+                                    className={`dashboard-tab-button ${mode === "Sell" ? "active" : ""}`}
+                                    onClick={() => setMode("Sell")}
                                 >
-                                Sell
+                                    Sell
                                 </button>
                             </div>
+
+                            {/* Display the user's current virtual balance */}
+                            <p>Buying Power: ${virtualBalance != null ? virtualBalance.toFixed(2) : 'Loading...'}</p>
 
                             {/* Sell Mode Panel */}
                             {mode === "Sell" && (
                                 <div>
-                                <p>Curr. Price/Share: ${currentPrice}</p>
-                                <p>Shares Held: {sharesHeld} Shares</p>
-                                <label>
-                                    Sell Amount (Shares):
-                                    <input
-                                    type="number"
-                                    value={sellAmount}
-                                    onChange={(e) => setSellAmount(e.target.value)}
-                                    className="dashboard-search-bar"
-                                    />
-                                </label>
-                                <p>Total Sale: ${totalSale}</p>
-                                <button className="dashboard-purchase-button">Sell</button>
+                                    <p>Curr. Price/Share: ${stockPrice?.c ?? 'N/A'}</p>
+                                    <p>Shares Held: {currentSharesHeld} Shares</p>
+                                    <label>
+                                        Sell Amount (Shares):
+                                        <input
+                                            type="number"
+                                            value={sellAmount}
+                                            onChange={(e) => setSellAmount(e.target.value)}
+                                            className="dashboard-search-bar"
+                                        />
+                                    </label>
+                                    <p>Total Sale: ${sellAmount ? (sellAmount * stockPrice.c).toFixed(2) : "0.00"}</p>
+                                    <button className="dashboard-purchase-button" onClick={handleTransaction}>Sell</button>
                                 </div>
                             )}
 
-                            {/* Buy Mode Panel Placeholder */}
+                            {/* Buy Mode Panel */}
                             {mode === "Buy" && (
                                 <div>
-                                <p>Curr. Price/Share: ${currentPrice}</p>
-                                <p>Shares Held: {sharesHeld} Shares</p>
-                                <label>
-                                    Buy Amount (Shares):
-                                    <input
-                                    type="number"
-                                    value={sellAmount}
-                                    onChange={(e) => setSellAmount(e.target.value)}
-                                    className="dashboard-search-bar" // Reusing your input styling
-                                    />
-                                </label>
-                                <p>Total Sale: ${totalSale}</p>
-                                <button className="dashboard-purchase-button">Buy</button>
+                                    <p>Curr. Price/Share: ${stockPrice?.c ?? 'N/A'}</p>
+                                    <label>
+                                        Buy Amount (Shares):
+                                        <input
+                                            type="number"
+                                            value={transactionAmount}
+                                            onChange={(e) => setTransactionAmount(e.target.value)}
+                                            className="dashboard-search-bar" 
+                                        />
+                                    </label>
+                                    <p>Total Purchase: ${transactionAmount && stockPrice?.c != null ? (transactionAmount * stockPrice.c).toFixed(2) : "0.00"}</p>
+                                    <button className="dashboard-purchase-button" onClick={handleTransaction}>Buy</button>
                                 </div>
                             )}
-                            </div>
+                        </div>
                         </section>
                     </section>
 

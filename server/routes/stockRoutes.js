@@ -68,29 +68,32 @@ router.get('/symbols', async (req, res) => {
 });
 
 router.get('/user/portfolio/:userId', async (req, res) => {
-  const { userId } = req.params;
-  console.log(`Incoming request for user portfolio with ID: ${userId}`);
-
-  try {
-      // Validate if userId is a valid ObjectId
-      if (!mongoose.Types.ObjectId.isValid(userId)) {
-          console.error(`Invalid user ID format: ${userId}`);
-          return res.status(400).json({ msg: 'Invalid user ID format' });
-      }
-
-      // Use new keyword to instantiate ObjectId properly
-      const user = await User.findById(new mongoose.Types.ObjectId(userId));
-      if (!user) {
-          console.error(`User not found for ID: ${userId}`);
-          return res.status(404).json({ msg: 'User not found' });
-      }
-
-      console.log(`User portfolio fetched successfully:`, user.portfolio);
-      res.status(200).json({ portfolio: user.portfolio });
-  } catch (error) {
-      console.error('Error fetching user portfolio:', error); // Log the entire error object
-      res.status(500).json({ msg: 'Server error' });
-  }
+    const { userId } = req.params;
+    console.log(`Incoming request for user portfolio with ID: ${userId}`);
+  
+    try {
+        // Validate if userId is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            console.error(`Invalid user ID format: ${userId}`);
+            return res.status(400).json({ msg: 'Invalid user ID format' });
+        }
+  
+        // Use new keyword to instantiate ObjectId properly
+        const user = await User.findById(new mongoose.Types.ObjectId(userId));
+        if (!user) {
+            console.error(`User not found for ID: ${userId}`);
+            return res.status(404).json({ msg: 'User not found' });
+        }
+  
+        console.log(`User portfolio fetched successfully:`, user.portfolio);
+        res.status(200).json({ 
+            portfolio: user.portfolio,
+            virtualBalance: user.virtualBalance // Include virtual balance in the response
+        });
+    } catch (error) {
+        console.error('Error fetching user portfolio:', error);
+        res.status(500).json({ msg: 'Server error' });
+    }
 });
 
 module.exports = router;
