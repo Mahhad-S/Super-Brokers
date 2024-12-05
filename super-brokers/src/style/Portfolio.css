@@ -1,4 +1,7 @@
 /* Wrapper and general layout */
+@import url('https://fonts.googleapis.com/css2?family=Charm:wght@400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Charm:wght@400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Saira+Condensed:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Charm:wght@400;700&family=DM+Serif+Text:ital@0;1&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Saira+Condensed:wght@100;200;300;400;500;600;700;800;900&display=swap');
 * {
     margin: 0;
     padding: 0;
@@ -23,7 +26,7 @@ body, html {
 .porta-hot-bar {
     display: grid;
     grid-template-columns: auto 1fr;
-    background-color: #7ba826;
+    background-color: #616161;
     padding: 0;
     align-items: end;
 }
@@ -62,6 +65,9 @@ body, html {
     width: 150px;
     text-align: center;
     display: inline-block;
+    font-family: "Saira Condensed", sans-serif;
+    font-weight: 500;
+    margin-right: 10px;
 }
 
 /* Add spacing between tabs */
@@ -122,24 +128,30 @@ body, html {
     grid-template-columns: 200px 1fr;
     gap: 20px;
     padding: 20px;
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: black;
 }
 
 /* Trade History Sidebar */
 .porta-sidebar-content {
-    background-color: #e0e0e0;
+    background-color: #2b2a2a;
     padding: 20px;
     border-radius: 8px;
-    color: #333;
+    color: #ffffff;
 }
 
 .porta-sidebar-content h3 {
+    font-family: "DM Serif Text", serif;
+    font-weight: 500;
+    font-style: normal;
     font-size: 1.2em;
     margin-bottom: 15px;
 }
 
 .porta-sidebar-content p {
     margin-bottom: 10px;
+    font-family: "Libre Baskerville", serif;
+    font-weight: 200;
+    font-style: normal;
 }
 
 .porta-positive {
@@ -153,9 +165,21 @@ body, html {
 /* Portfolio Section */
 .porta-main-content {
     padding: 20px;
-    background-color: #fff;
+    background-color: #2b2a2a;
     border-radius: 8px;
+    color: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.porta-main-content h2{
+    font-family: "DM Serif Text", serif;
+    font-weight: 500;
+    font-style: normal;
+}
+
+.porta-main-content h3{
+    font-family: "DM Serif Text", serif;
+    font-weight: 500;
+    font-style: normal;
 }
 
 .porta-buying-power {
@@ -200,7 +224,10 @@ body, html {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
     font-size: 0.9em;
-    color: #666;
+    color: #ffffff;
     padding: 10px 0 0 20px;
     border-top: 1px solid #ddd;
+    font-family: "Libre Baskerville", serif;
+    font-weight: 400;
+    font-style: normal;
 }

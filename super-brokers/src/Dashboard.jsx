@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import axios from 'axios';
 import { NavLink } from 'react-router-dom';
 import { AuthContext } from "./context/AuthContext";
@@ -8,16 +8,22 @@ import "./style/Dashboard.css";
 function Dashboard() { 
     const [searchTerm, setSearchTerm] = useState('');
     const [suggestions, setSuggestions] = useState([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
     const [stockData, setStockData] = useState(null);
     const [stockPrice, setStockPrice] = useState(null); // State for stock price
     const [newsArticles, setNewsArticles] = useState([]);
     const [searchError, setSearchError] = useState(null);
     const [newsError, setNewsError] = useState(null);
     const { logout } = useContext(AuthContext);
+    const searchRef = useRef(null);
+    const [mode, setMode] = useState("Buy"); // Active mode: Buy or Sell
+    const [sellAmount, setSellAmount] = useState(""); // Sell shares input
+    const currentPrice = 50; // Example: Replace with Finnhub API data
+    const sharesHeld = 100; // Example: Replace with Finnhub API data
+    const totalSale = sellAmount ? (sellAmount * currentPrice).toFixed(2) : "0.00"; // Calculate total sale for Sell Mode
     const [followedStocks, setFollowedStocks] = useState([]);
     const { userId } = useContext(AuthContext);
     const isFollowed = followedStocks.some((stock) => stock.symbol === stockData?.profile?.ticker);
-    const [mode, setMode] = useState("Buy");
     const [transactionAmount, setTransactionAmount] = useState("");
     const [positions, setPositions] = useState([]);
 
@@ -66,7 +72,7 @@ function Dashboard() {
             try {
                 const response = await axios.get(`http://localhost:3001/api/stocks/symbol-lookup/${searchTerm}`);
                 setSuggestions(response.data.result || []);
-                setSearchError(null);
+                setShowSuggestions(true);
             } catch (err) {
                 setSuggestions([]);
                 setSearchError('Failed to fetch symbol suggestions. Please try again.');
@@ -123,6 +129,7 @@ function Dashboard() {
             setSearchError(null);
             setSuggestions([]);
             setSearchTerm('');
+            setShowSuggestions(false);
         } catch (err) {
             console.error("Error fetching stock data:", err);
             setSearchError('Failed to fetch stock information or candlestick data. Please try again.');
@@ -319,96 +326,144 @@ function Dashboard() {
                 <section className="dashboard-main-content">
 
                     <section className="dashboard-main-left">
-                        <section className="dashboard-sub-top">
-                            <input
-                                type="text"
-                                className="home-search-bar"
-                                placeholder="Search for a stock..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                onKeyDown={handleKeyPress} // Trigger on "Enter" key press
-                            />
-                            {suggestions && suggestions.length > 0 && (
-                                <ul className="dropdown">
-                                    {suggestions.map((item, index) => (
-                                        <li key={index} onClick={() => handleSearch(item.symbol)}>
-                                            <strong>{item.displaySymbol}</strong> - {item.description}
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
+                        <section className="dashboard-sub-top" ref={searchRef}>
+                            <div className="dashboard-search-bar-container">
+                                <input
+                                    type="text"
+                                    className="dashboard-search-bar"
+                                    placeholder="Search for a stock..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    onKeyDown={handleKeyPress} // Trigger on "Enter" key press
+                                />
+                                {suggestions.length > 0 && (
+                                    <ul className="dashboard-search-dropdown">
+                                        {suggestions.map((item, index) => (
+                                            <li key={index} onClick={() => handleSearch(item.symbol)}>
+                                                <strong>{item.displaySymbol}</strong> - {item.description}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </div>
                         </section>
                         <section className="dashboard-sub-left">
-                        <div className="home-content-left">
-                            {stockData && stockPrice && (
+                            <div className="dashboard-stock-info">
+                                {stockData && stockPrice && (
+                                    <div className="dashboard-stock-info-interior">
+                                        <div className="dashboard-stock-name">
+                                            {stockData.profile.ticker}
+                                            <span
+                                                className={`stock-price ${
+                                                    stockPrice.d > 0 ? 'positive' : 'negative'
+                                                }`}
+                                            >
+                                                ${stockPrice.c} ({stockPrice.d > 0 ? '+' : ''}{stockPrice.dp}%)
+                                            </span>
+                                        </div>
+                                        <button onClick={handleFollowUnfollow}>
+                                            {isFollowed ? 'Unfollow' : 'Follow'}
+                                        </button>
+
+                                        {/*
+                                        <div className="dashboard-row-content">
+                                            {candlestickData && <CandlestickChart data={candlestickData} />}
+                                        </div>
+                                        */}
+
+                                        <div className="dashboard-stock-stats">
+                                        <table>
+                                                <tr>
+                                                    <td>High Price (Day): ${stockPrice.h}</td>
+                                                    <td>Market Capitalization: ${stockData.profile.marketCapitalization}</td>
+                                                    <td>52-Week High: ${stockData.financials['52WeekHigh']}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Low Price (Day): ${stockPrice.l}</td>
+                                                    <td>Industry: {stockData.profile.finnhubIndustry}</td>
+                                                    <td>52-Week Low: ${stockData.financials['52WeekLow']}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Open Price: ${stockPrice.o}</td>
+                                                    <td>10-Day Average Volume: {stockData.financials['10DayAverageTradingVolume']}</td>
+                                                    <td>52-Week Low Date: {stockData.financials['52WeekLowDate']}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Previous Close: ${stockPrice.pc}</td>
+                                                    <td>Beta: {stockData.financials['beta']}</td>
+                                                    <td>52-Week Return: {stockData.financials['52WeekPriceReturnDaily']}%</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+
+                                        <div className="dashboard-stock-summary">
+                                            <h3>COMPANY / Stock Summary will go here</h3> 
+                                            <p>Lorem ipsum odor amet, consectetuer adipiscing elit. Consectetur nulla sodales mattis, ridiculus luctus vehicula dolor. Pretium litora parturient mi vitae 
+                                                sed consequat sagittis; at nullam. Eros eros vehicula lorem dui id viverra hendrerit. Dolor convallis euismod justo; netus ligula imperdiet rutrum maximus.</p>
+                                            <p>Lorem ipsum odor amet, consectetuer adipiscing elit. Consectetur nulla sodales mattis, ridiculus luctus vehicula dolor. Pretium litora parturient mi vitae 
+                                                sed consequat sagittis; at nullam. Eros eros vehicula lorem dui id viverra hendrerit. Dolor convallis euismod justo; netus ligula imperdiet rutrum maximus.</p>
+                                        </div>
+                                    </div>
+                                )}
+                                {searchError && <p className="error">{searchError}</p>}
+                            </div>
+                        </section>
+                        
+                        <section className="dashboard-sub-right">
+                        <div className="dashboard-buy-sell-panel">
+                            <div>
+                                {/* Toggle Buttons */}
+                                <button
+                                className={`dashboard-tab-button ${mode === "Buy" ? "active" : ""}`}
+                                onClick={() => setMode("Buy")}
+                                >
+                                Buy
+                                </button>
+                                <button
+                                className={`dashboard-tab-button ${mode === "Sell" ? "active" : ""}`}
+                                onClick={() => setMode("Sell")}
+                                >
+                                Sell
+                                </button>
+                            </div>
+
+                            {/* Sell Mode Panel */}
+                            {mode === "Sell" && (
                                 <div>
-                                    <div className="home-stock-name">
-                                        {stockData.profile.ticker}
-                                        <span
-                                            className={`stock-price ${
-                                                stockPrice.d > 0 ? 'positive' : 'negative'
-                                            }`}
-                                        >
-                                            ${stockPrice.c} ({stockPrice.d > 0 ? '+' : ''}{stockPrice.dp}%)
-                                        </span>
-                                    </div>
-                                    <button onClick={handleFollowUnfollow}>
-                                        {isFollowed ? 'Unfollow' : 'Follow'}
-                                    </button>
-
-                                    <div className="home-row-content">
-                                        <p>High Price (Day): ${stockPrice.h}</p>
-                                        <p>Low Price (Day): ${stockPrice.l}</p>
-                                        <p>Open Price: ${stockPrice.o}</p>
-                                        <p>Previous Close: ${stockPrice.pc}</p>
-                                        <p>Market Capitalization: ${stockData.profile.marketCapitalization}</p>
-                                        <p>Industry: {stockData.profile.finnhubIndustry}</p>
-                                        <p>10-Day Average Volume: {stockData.financials['10DayAverageTradingVolume']}</p>
-                                        <p>52-Week High: ${stockData.financials['52WeekHigh']}</p>
-                                        <p>52-Week Low: ${stockData.financials['52WeekLow']}</p>
-                                        <p>52-Week Low Date: {stockData.financials['52WeekLowDate']}</p>
-                                        <p>52-Week Return: {stockData.financials['52WeekPriceReturnDaily']}%</p>
-                                        <p>Beta: {stockData.financials['beta']}</p>
-                                    </div>
-
-                                    <div className="dashboard-row-content">
-                                        <h3>COMPANY / Stock Summary will go here</h3> 
-                                        <p>Lorem ipsum odor amet, consectetuer adipiscing elit. Consectetur nulla sodales mattis, ridiculus luctus vehicula dolor. Pretium litora parturient mi vitae 
-                                            sed consequat sagittis; at nullam. Eros eros vehicula lorem dui id viverra hendrerit. Dolor convallis euismod justo; netus ligula imperdiet rutrum maximus.</p>
-                                        <p>Lorem ipsum odor amet, consectetuer adipiscing elit. Consectetur nulla sodales mattis, ridiculus luctus vehicula dolor. Pretium litora parturient mi vitae 
-                                            sed consequat sagittis; at nullam. Eros eros vehicula lorem dui id viverra hendrerit. Dolor convallis euismod justo; netus ligula imperdiet rutrum maximus.</p>
-                                    </div>
+                                <p>Curr. Price/Share: ${currentPrice}</p>
+                                <p>Shares Held: {sharesHeld} Shares</p>
+                                <label>
+                                    Sell Amount (Shares):
+                                    <input
+                                    type="number"
+                                    value={sellAmount}
+                                    onChange={(e) => setSellAmount(e.target.value)}
+                                    className="dashboard-search-bar"
+                                    />
+                                </label>
+                                <p>Total Sale: ${totalSale}</p>
+                                <button className="dashboard-purchase-button">Sell</button>
                                 </div>
                             )}
-                        {searchError && <p className="error">{searchError}</p>}
-                        </div>
-                        </section>
-                        <section className="dashboard-sub-right">
-                            <div className="dashboard-buy-sell-panel">
+
+                            {/* Buy Mode Panel Placeholder */}
+                            {mode === "Buy" && (
                                 <div>
-                                    <button className={`tab-button ${mode === "Buy" ? "active" : ""}`} onClick={() => setMode("Buy")}>
-                                        Buy
-                                    </button>
-                                    <button className={`tab-button ${mode === "Sell" ? "active" : ""}`} onClick={() => setMode("Sell")}>
-                                        Sell
-                                    </button>
+                                <p>Curr. Price/Share: ${currentPrice}</p>
+                                <p>Shares Held: {sharesHeld} Shares</p>
+                                <label>
+                                    Buy Amount (Shares):
+                                    <input
+                                    type="number"
+                                    value={sellAmount}
+                                    onChange={(e) => setSellAmount(e.target.value)}
+                                    className="dashboard-search-bar" // Reusing your input styling
+                                    />
+                                </label>
+                                <p>Total Sale: ${totalSale}</p>
+                                <button className="dashboard-purchase-button">Buy</button>
                                 </div>
-                                <div>
-                                    <p>Curr. Price/Share: ${stockPrice?.c ?? "N/A"}</p>
-                                    <label>
-                                        {mode} Amount (Shares):
-                                        <input
-                                        type="number"
-                                        value={transactionAmount}
-                                        onChange={(e) => setTransactionAmount(e.target.value)}
-                                        className="home-search-bar"
-                                        />
-                                    </label>
-                                    <p>Total Cost: ${(transactionAmount * stockPrice?.c).toFixed(2)}</p>
-                                    <button className="dashboard-purchase-button" onClick={handleTransaction}>
-                                        {mode}
-                                    </button>
-                                </div>
+                            )}
                             </div>
                         </section>
                     </section>

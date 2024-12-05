@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Charm:wght@400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Charm:wght@400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Saira+Condensed:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Charm:wght@400;700&family=DM+Serif+Text:ital@0;1&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Saira+Condensed:wght@100;200;300;400;500;600;700;800;900&display=swap');
 * {
     margin: 0;
     padding: 0;
@@ -23,7 +26,7 @@ body, html {
 .home-hot-bar {
     display: grid;
     grid-template-columns: auto 1fr;
-    background-color: #7ba826;
+    background-color: #616161;
     padding: 0;
     align-items: end;
 }
@@ -61,6 +64,9 @@ body, html {
     width: 150px;
     text-align: center;
     display: inline-block;
+    font-family: "Saira Condensed", sans-serif;
+    font-weight: 500;
+    margin-right: 10px;
 }
 
 /* Add spacing between tabs */
@@ -117,15 +123,16 @@ body, html {
 
 .home-body-content {
     display: grid;
-    grid-template-columns: 100% 1fr;
     padding: 20px;
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: #000000;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .home-main-content {
     display: grid;
     padding: 20px;
-    background-color: #fff;
+    background-color: #2b2a2a;
     grid-template-columns: 80% 1fr;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -137,28 +144,81 @@ body, html {
     margin: 10px;
 }
 
-.home-search-bar {
-    display: flex;
-    background-color: #e0e0e0;
-    border: none;
-    border-radius: 10px;
-    width: 100%;
-    font-size: 24px;
-    padding-left: 20px;
+.home-sub-top {
+    grid-column: 1 / 3;
+    grid-row: 1 / 2;
+    margin: 0 20px;
+    position: relative;
+    z-index: 1;
 }
 
-.home-search-bar:focus {
-    outline: none;
+.home-search-bar-container {
+    position: relative;
+}
+
+.home-search-bar {
+    width: 100%;
+    font-size: 16px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.home-search-dropdown {
+    position: absolute;
+    z-index: 2;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: calc(100% - 2px);
+    margin-top: 4px;
+    list-style: none;
+    padding: 0;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.home-search-dropdown li {
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.home-search-dropdown li:hover {
+    background-color: #f1f1f1;
+}
+
+.home-sub-left {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+    margin: 0 30px 30px 20px;
+}
+
+.home-stock-info {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+}
+
+.home-stock-info-interior {
+    display: grid;
 }
 
 .home-stock-name {
-    font-size: 50px;
+    grid-row: 1 / 2;
+    grid-column: 1 /2;
+    font-size: 40px;
     font-weight: bold;
     margin-top: 20px;
-    padding-left: 40px;
+    padding-left: 30px;
+    color: white;
 }
 
-.home-row-content {
+.home-stock-stats {
+    grid-column: 1 / 3;
     background-color: #e0e0e0;
     border-radius: 10px;
     padding: 1.5rem;
@@ -167,35 +227,56 @@ body, html {
     text-align: center;
 }
 
-.dropdown {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    max-height: 200px;
-    overflow-y: auto;
-    position: absolute;
-    background: #fff;
-    width: 48.2%;
-    z-index: 1000;
-    top: 55px;
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+    text-align: center;
 }
 
-.dropdown li {
-    padding: 10px;
-    cursor: pointer;
-    border-bottom: 1px solid #ddd;
+td {
+    border: 0px solid #dddddd;
+    text-align: center;
+    padding: 8px;
+    font-family: "Libre Baskerville", serif;
+    font-weight: 400;
+    font-style: normal;
 }
 
-.dropdown li:hover {
-    background-color: #f0f0f0;
+.home-stock-summary {
+    grid-column: 1 / 3;
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 20px 0;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.home-stock-summary h3 {
+    font-family: "DM Serif Text", serif;
+    font-weight: 700;
+    font-style: normal;
+    text-align: center;
+    color: black;
+}
+
+.home-stock-summary p{
+    font-family: "Libre Baskerville", serif;
+    font-weight: 400;
+    font-style: normal;
+    color: black;
 }
 
 .stock-price {
-    font-size: 1.2rem;
+    font-size: 1.8rem;
     margin-left: 10px;
     font-weight: bold;
+    text-shadow: 
+        -1px -1px 0 #000000,  
+         1px -1px 0 #000000,
+        -1px  1px 0 #000000,
+         1px  1px 0 #000000;
 }
 
 .stock-price.positive {
@@ -226,34 +307,40 @@ canvas {
 }
 
 .home-news-bubble {
-    background-color: #f9f9f9;
+    background-color: #171515;
     border-radius: 20px;
     padding: 10px;
     margin: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #171515;
     font-size: 0.9rem;
     text-align: left;
     display: flex;
     flex-direction: column;
     gap: 10px;
     max-width: 300px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 10px rgba(255, 255, 255, 0.1);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .home-news-bubble h3 {
     font-size: 1.1rem;
     margin: 0;
-    color: #333;
     line-height: 1.4;
-    font-weight: bold;
+    font-family: "DM Serif Text", serif;
+    font-weight: 500;
+    font-style: normal;
+    text-align: center;
 }
 
 .home-news-bubble p {
     font-size: 0.95rem;
     margin: 0;
-    color: #555;
+    color: #ffffff;
     line-height: 1.6;
+    text-align: center;
+    font-family: "Libre Baskerville", serif;
+    font-weight: 400;
+    font-style: normal;
 }
 
 .home-news-bubble:hover {
@@ -270,5 +357,3 @@ canvas {
 .home-news-bubble a:hover {
     color: #0056b3;
 }
-
-
