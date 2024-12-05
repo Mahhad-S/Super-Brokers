@@ -72,17 +72,23 @@ router.get('/user/portfolio/:userId', async (req, res) => {
   console.log(`Incoming request for user portfolio with ID: ${userId}`);
 
   try {
-      // Convert userId to ObjectId
-      const user = await User.findById(mongoose.Types.ObjectId(userId));
+      // Validate if userId is a valid ObjectId
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+          console.error(`Invalid user ID format: ${userId}`);
+          return res.status(400).json({ msg: 'Invalid user ID format' });
+      }
+
+      // Use new keyword to instantiate ObjectId properly
+      const user = await User.findById(new mongoose.Types.ObjectId(userId));
       if (!user) {
           console.error(`User not found for ID: ${userId}`);
           return res.status(404).json({ msg: 'User not found' });
       }
 
-      console.log(`User portfolio fetched:`, user.portfolio);
+      console.log(`User portfolio fetched successfully:`, user.portfolio);
       res.status(200).json({ portfolio: user.portfolio });
   } catch (error) {
-      console.error('Error fetching user portfolio:', error.message);
+      console.error('Error fetching user portfolio:', error); // Log the entire error object
       res.status(500).json({ msg: 'Server error' });
   }
 });

@@ -6,6 +6,7 @@ const tradeRoutes = require('./routes/trades');
 const stockRoutes = require('./routes/stockRoutes');
 const newsRoutes = require('./routes/newsRoutes');
 const followRoutes = require('./routes/followRoutes');
+const UserModel = require('./models/user');
 require('dotenv').config();
 
 const app = express();

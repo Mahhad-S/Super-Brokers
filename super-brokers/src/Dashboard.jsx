@@ -80,13 +80,14 @@ function Dashboard() {
             try {
                 if (!userId) {
                     console.error("User ID is not available. Ensure the user is logged in.");
-                    return;
+                    return; // Exit early if userId is not available
                 }
         
-                const apiUrl = `http://localhost:3001/api/user/portfolio/${userId}`;
+                const apiUrl = `http://localhost:3001/api/stocks/user/portfolio/${userId}`;
                 console.log(`Fetching portfolio from: ${apiUrl}`);
         
                 const response = await axios.get(apiUrl);
+                console.log("API Response:", response); // <-- Log response to check its structure
                 if (response.status === 200 && response.data?.portfolio) {
                     console.log("Portfolio data retrieved successfully:", response.data.portfolio);
                     setPositions(response.data.portfolio);
@@ -98,8 +99,11 @@ function Dashboard() {
                 console.error("Error fetching user portfolio:", error.message);
             }
         };
-      
-        fetchPositions();
+    
+        // Fetch positions only if userId is defined
+        if (userId) {
+            fetchPositions();
+        }
     }, [userId]);
           
     // Fetch stock details, price, and company-specific news when a symbol is selected
