@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import './style/Signup.css';  // Import the new CSS file for Signup styling
 
 function Signup() {
-    const [username, setName] = useState('');
+    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
@@ -77,7 +77,7 @@ function Signup() {
                                     autoComplete="off"
                                     name="username"
                                     className="form-control signup-input-rounded"
-                                    onChange={(e) => setName(e.target.value)}
+                                    onChange={(e) => setUsername(e.target.value)}
                                 />
                             </div>
                             <div className="signup-email">

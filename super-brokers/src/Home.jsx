@@ -52,6 +52,11 @@ function Home() {
         }
     };
 
+    // Fetch default stock (SPY)
+    useEffect(() => {
+        handleSearch('AAPL');
+    }, []);
+
     // Fetch stock details, price, and company-specific news when a symbol is selected
     const handleSearch = async (symbol) => {
         if (!symbol) return;
