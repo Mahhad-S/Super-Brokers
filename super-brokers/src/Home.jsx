@@ -32,6 +32,11 @@ function Home() {
         fetchMarketNews();
     }, []);
 
+    // Fetch default stock
+    useEffect(() => {
+        handleSearch('AAPL');
+    }, []);
+
     // Fetch stock suggestions when the user presses "Enter"
     const handleKeyPress = async (e) => {
         if (e.key === 'Enter') {

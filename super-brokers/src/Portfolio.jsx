@@ -144,13 +144,14 @@ function Portfolio() {
                 <aside className="porta-sidebar-content">
                     <h3>Trade History</h3>
                     {tradeHistory.length > 0 ? (
-                        (showAllTrades ? tradeHistory : tradeHistory.slice(0, 10)).map((trade, index) => (
-                            <p key={index}>
-                                {new Date(trade.date).toLocaleDateString()} {trade.stockSymbol} {trade.transactionType.toUpperCase()} 
-                                <span className={`porta-${trade.transactionType === 'buy' ? 'negative' : 'positive'}`}>
-                                    ${trade.transactionValue.toFixed(2)}
-                                </span>
-                            </p>
+                        tradeHistory.map((trade, index) => (
+                            <div key={index} className="trade-item">
+                                <p>
+                                    {new Date(trade.date).toLocaleDateString()} {trade.stockSymbol} {trade.transactionType.toUpperCase()} @ ${trade.transactionValue ? trade.transactionValue.toFixed(2) : 'N/A'}<br />
+                                    Shares: {trade.quantity ? trade.quantity : 'N/A'}<br />
+                                    <span className={`trade-total-value ${trade.transactionType === 'buy' ? 'negative' : 'positive'}`}>Total: ${trade.quantity && trade.transactionValue ? (trade.quantity * trade.transactionValue).toFixed(2) : 'N/A'}</span>
+                                </p>
+                            </div>
                         ))
                     ) : (
                         <p>No trades available</p>
@@ -164,7 +165,7 @@ function Portfolio() {
 
                 {/* Portfolio Details */}
                 <section className="porta-main-content">
-                    <h2>Buying Power <span className="porta-buying-power">${virtualBalance.toFixed(2)}</span></h2>
+                    <h2>Buying Power <span className="porta-buying-power">${virtualBalance ? virtualBalance.toFixed(2) : 'N/A'}</span></h2>
                     <div className="porta-positions">
                         <h3>Held Positions</h3>
 
@@ -188,7 +189,7 @@ function Portfolio() {
                                     {expandedTickers[position.stockSymbol] && (
                                         <div className="porta-ticker-details">
                                             <div>Shares: {position.quantity}</div>
-                                            <div>Avg. Cost: ${position.averagePrice.toFixed(2)}</div>
+                                            <div>Avg. Cost: ${position.averagePrice ? position.averagePrice.toFixed(2) : 'N/A'}</div>
                                             <div>Market Cost: ${position.marketCost ? position.marketCost.toFixed(2) : 'Loading...'}</div>
                                             <div>Portfolio Diversity: {position.portfolioDiversity ? `${position.portfolioDiversity.toFixed(2)}%` : 'Loading...'}</div>
                                             <div>Today's Return: ${position.todayReturn ? position.todayReturn.toFixed(2) : 'Loading...'}</div>

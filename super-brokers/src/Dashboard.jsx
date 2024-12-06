@@ -45,7 +45,7 @@ function Dashboard() {
         fetchMarketNews();
     }, []);
     
-    // Fetch default stock (SPY)
+    // Fetch default stock
     useEffect(() => {
         handleSearch('AAPL');
     }, []);

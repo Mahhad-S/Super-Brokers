@@ -67,13 +67,14 @@ router.post('/trade', async (req, res) => {
       return res.status(400).json({ msg: 'Invalid transaction type' });
     }
 
-    // Create new trade document
+    // Create new trade document with detailed information
     const newTrade = new Trade({
       userId,
       stockSymbol,
       transactionType,
       quantity,
       transactionValue,
+      totalValue,
     });
 
     // Save the trade and update user data
