@@ -1,4 +1,4 @@
-# Comp-490-Super_Seniors
+# Super Brokers Virtual Stock Trading App
 
 Created by Mahhad, Anh, Edwin, Ethan and Emi
 
